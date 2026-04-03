@@ -6,9 +6,9 @@ Sprint 1 M4 reference for wiring Google OAuth with the current Supabase project.
 
 Use these values in `Authentication -> URL Configuration`:
 
-- Site URL: `http://localhost:5173`
+- Site URL: `https://sales-management-system-project.vercel.app`
 - Additional Redirect URL: `http://localhost:5173/auth/callback`
-- Additional Redirect URL: `https://your-production-domain/auth/callback`
+- Additional Redirect URL: `https://sales-management-system-project.vercel.app/auth/callback`
 
 ## Google Cloud Console
 
@@ -21,3 +21,4 @@ Use the Supabase callback URL as an authorized redirect URI for the Google OAuth
 - The frontend sends both Google sign-in buttons to `/auth/callback`.
 - `/auth/callback` is handled in the app before redirecting the user to `/sales` or back to `/login`.
 - Email confirmation redirects should also point to `/auth/callback`.
+- The Vercel deployment needs SPA rewrites so direct visits to `/sales` and `/auth/callback` resolve to `index.html`.
