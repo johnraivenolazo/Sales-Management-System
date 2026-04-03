@@ -14,6 +14,7 @@ function LoginPage() {
     isSupabaseConfigured,
     setAuthError,
     signInWithEmail,
+    signInWithGoogle,
   } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -21,6 +22,7 @@ function LoginPage() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
@@ -86,8 +88,32 @@ function LoginPage() {
     setIsSubmitting(false);
   }
 
+  async function handleGoogleSignIn() {
+    setAuthError("");
+    setSuccessMessage("");
+    setIsGoogleSubmitting(true);
+
+    const { error } = await signInWithGoogle();
+
+    if (error) {
+      setAuthError(error.message);
+      setIsGoogleSubmitting(false);
+      return;
+    }
+
+    setSuccessMessage("Redirecting to Google sign-in...");
+    setIsGoogleSubmitting(false);
+  }
+
+  const callbackMessage = searchParams.get("message");
+  const queryError = searchParams.get("error");
+
   const loginError =
-    searchParams.get("error") === "not_activated" || guardReason === "not_activated"
+    queryError === "oauth_failed" && callbackMessage
+      ? callbackMessage
+      : queryError === "oauth_failed"
+        ? "Google sign-in could not be completed. Please try again."
+        : queryError === "not_activated" || guardReason === "not_activated"
       ? "Your account is pending activation by a Sales Manager."
       : authError;
 
@@ -234,10 +260,11 @@ function LoginPage() {
 
             <button
               className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled
+              disabled={isGoogleSubmitting || isAuthLoading || !isSupabaseConfigured}
+              onClick={() => void handleGoogleSignIn()}
               type="button"
             >
-              Continue with Google
+              {isGoogleSubmitting ? "Redirecting..." : "Continue with Google"}
             </button>
           </form>
         </section>
