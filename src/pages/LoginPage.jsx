@@ -1,18 +1,41 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const {
+    authError,
+    currentUser,
+    guardReason,
+    isAuthLoading,
+    isSupabaseConfigured,
+    setAuthError,
+    signInWithEmail,
+  } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    if (currentUser) {
+      const redirectTarget = location.state?.from?.pathname || "/sales";
+      navigate(redirectTarget, { replace: true });
+    }
+  }, [currentUser, location.state, navigate]);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: "" }));
+    setSuccessMessage("");
+    setAuthError("");
   }
 
   function validate() {
@@ -33,12 +56,40 @@ function LoginPage() {
     return nextErrors;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
-    setSubmitted(Object.keys(nextErrors).length === 0);
+
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSuccessMessage("");
+
+    const { data, error } = await signInWithEmail({
+      email: formData.email.trim(),
+      password: formData.password,
+    });
+
+    if (error) {
+      setAuthError(error.message);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (data?.session) {
+      setSuccessMessage("Login successful. Preparing your session...");
+    }
+
+    setIsSubmitting(false);
   }
+
+  const loginError =
+    searchParams.get("error") === "not_activated" || guardReason === "not_activated"
+      ? "Your account is pending activation by a Sales Manager."
+      : authError;
 
   return (
     <main className="min-h-screen bg-[#f7f1e6] px-6 py-10 text-slate-900">
@@ -148,17 +199,31 @@ function LoginPage() {
               )}
             </label>
 
-            {submitted ? (
+            {!isSupabaseConfigured ? (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+                Supabase is not configured yet. Add your project URL and anon
+                key before testing sign-in.
+              </div>
+            ) : null}
+
+            {loginError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                {loginError}
+              </div>
+            ) : null}
+
+            {successMessage ? (
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-                Login form passed validation and is ready for auth hookup.
+                {successMessage}
               </div>
             ) : null}
 
             <button
               className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+              disabled={isSubmitting || isAuthLoading}
               type="submit"
             >
-              Sign in with email
+              {isSubmitting ? "Signing in..." : "Sign in with email"}
             </button>
 
             <div className="flex items-center gap-3 text-sm text-slate-400">
@@ -168,7 +233,8 @@ function LoginPage() {
             </div>
 
             <button
-              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50"
+              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled
               type="button"
             >
               Continue with Google
