@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
 
 const navGroups = [
   {
@@ -29,6 +30,13 @@ const navGroups = [
 ];
 
 function ShellPlaceholderLayout() {
+  const { currentUser, signOutUser } = useAuth();
+  const displayName =
+    currentUser?.username ||
+    [currentUser?.first_name, currentUser?.last_name].filter(Boolean).join(" ") ||
+    currentUser?.email ||
+    "Demo User";
+
   return (
     <div className="min-h-screen bg-[#f7f1e6] text-slate-900">
       <div className="border-b border-slate-900/5 bg-white/90 backdrop-blur">
@@ -45,10 +53,11 @@ function ShellPlaceholderLayout() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="rounded-full border border-slate-900/10 bg-slate-50 px-4 py-2 text-sm">
               <span className="font-semibold text-slate-900">Logged in:</span>{" "}
-              Demo User
+              {displayName}
             </div>
             <button
               className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+              onClick={() => void signOutUser()}
               type="button"
             >
               Logout

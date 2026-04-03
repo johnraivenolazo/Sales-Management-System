@@ -1,7 +1,17 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
 
 function RegisterPage() {
+  const navigate = useNavigate();
+  const {
+    authError,
+    currentUser,
+    isAuthLoading,
+    isSupabaseConfigured,
+    setAuthError,
+    signUpWithEmail,
+  } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -10,12 +20,21 @@ function RegisterPage() {
     password: "",
   });
   const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/sales", { replace: true });
+    }
+  }, [currentUser, navigate]);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: "" }));
+    setSuccessMessage("");
+    setAuthError("");
   }
 
   function validate() {
@@ -50,11 +69,39 @@ function RegisterPage() {
     return nextErrors;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
-    setSubmitted(Object.keys(nextErrors).length === 0);
+
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSuccessMessage("");
+
+    const { data, error } = await signUpWithEmail({
+      email: formData.email.trim(),
+      password: formData.password,
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      username: formData.username.trim(),
+    });
+
+    if (error) {
+      setAuthError(error.message);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (data?.user) {
+      setSuccessMessage(
+        "Account created. Check your email if confirmation is enabled, then wait for activation by a Sales Manager.",
+      );
+    }
+
+    setIsSubmitting(false);
   }
 
   const inputClassName = (hasError) =>
@@ -219,22 +266,36 @@ function RegisterPage() {
               )}
             </label>
 
-            {submitted ? (
+            {!isSupabaseConfigured ? (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+                Supabase is not configured yet. Add your project URL and anon
+                key before testing sign-up.
+              </div>
+            ) : null}
+
+            {authError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                {authError}
+              </div>
+            ) : null}
+
+            {successMessage ? (
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-                Registration form passed validation and is ready for auth
-                integration.
+                {successMessage}
               </div>
             ) : null}
 
             <button
               className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+              disabled={isSubmitting || isAuthLoading}
               type="submit"
             >
-              Create account
+              {isSubmitting ? "Creating account..." : "Create account"}
             </button>
 
             <button
-              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50"
+              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled
               type="button"
             >
               Register with Google
