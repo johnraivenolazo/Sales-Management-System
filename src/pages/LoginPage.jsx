@@ -266,6 +266,17 @@ function LoginPage() {
             >
               {isGoogleSubmitting ? "Redirecting..." : "Continue with Google"}
             </button>
+
+            <p className="text-center text-sm text-slate-500">
+              Need an account?{" "}
+              <Link
+                className="font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+                to="/register"
+              >
+                Create one here
+              </Link>
+              .
+            </p>
           </form>
         </section>
       </div>

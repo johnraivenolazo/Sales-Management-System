@@ -1,12 +1,6 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
+import { AuthContext } from "./auth-context.js";
 import { isSupabaseConfigured, supabase } from "../lib/supabaseClient.js";
-
-const AuthContext = createContext(null);
 
 function buildAuthCallbackUrl() {
   if (typeof window === "undefined") {
@@ -26,12 +20,12 @@ async function readAppUser(authUser) {
   }
 
   const selectClause =
-    "userId, username, email, first_name, last_name, user_type, record_status";
+    "userid, username, email, first_name, last_name, user_type, record_status";
 
   const byId = await supabase
     .from("user")
     .select(selectClause)
-    .eq("userId", authUser.id)
+    .eq("userid", authUser.id)
     .maybeSingle();
 
   if (byId.error && !isMissingRowError(byId.error)) {
@@ -287,5 +281,3 @@ export function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-export { AuthContext };
