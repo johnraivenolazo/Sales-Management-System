@@ -10,6 +10,7 @@ function RegisterPage() {
     isAuthLoading,
     isSupabaseConfigured,
     setAuthError,
+    signInWithGoogle,
     signUpWithEmail,
   } = useAuth();
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ function RegisterPage() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
@@ -102,6 +104,23 @@ function RegisterPage() {
     }
 
     setIsSubmitting(false);
+  }
+
+  async function handleGoogleRegister() {
+    setAuthError("");
+    setSuccessMessage("");
+    setIsGoogleSubmitting(true);
+
+    const { error } = await signInWithGoogle();
+
+    if (error) {
+      setAuthError(error.message);
+      setIsGoogleSubmitting(false);
+      return;
+    }
+
+    setSuccessMessage("Redirecting to Google sign-up...");
+    setIsGoogleSubmitting(false);
   }
 
   const inputClassName = (hasError) =>
@@ -295,10 +314,11 @@ function RegisterPage() {
 
             <button
               className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled
+              disabled={isGoogleSubmitting || isAuthLoading || !isSupabaseConfigured}
+              onClick={() => void handleGoogleRegister()}
               type="button"
             >
-              Register with Google
+              {isGoogleSubmitting ? "Redirecting..." : "Register with Google"}
             </button>
           </form>
         </section>

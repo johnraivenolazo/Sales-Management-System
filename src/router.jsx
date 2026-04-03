@@ -22,6 +22,10 @@ export const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
+    path: "/auth/callback",
+    element: <AuthCallbackPage />,
+  },
+  {
     element: <ProtectedRoute />,
     children: [
       {
@@ -110,10 +114,6 @@ export const router = createBrowserRouter([
                 summary="Deleted items placeholder for recovery tooling in Sprint 2."
               />
             ),
-          },
-          {
-            path: "/auth/callback",
-            element: <AuthCallbackPage />,
           },
         ],
       },
