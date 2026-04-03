@@ -5,6 +5,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
+import RegisterPage from "./pages/RegisterPage.jsx";
 import SalesDetailPlaceholderPage from "./pages/SalesDetailPlaceholderPage.jsx";
 
 export const router = createBrowserRouter([
@@ -15,6 +16,10 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
     element: <ProtectedRoute />,
