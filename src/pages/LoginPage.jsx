@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
+import { getAuthDebugLog, logAuthDebug } from "../lib/authDebug.js";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -28,6 +29,11 @@ function LoginPage() {
   useEffect(() => {
     if (currentUser) {
       const redirectTarget = location.state?.from?.pathname || "/sales";
+      logAuthDebug("login.redirectAuthenticatedUser", {
+        redirectTarget,
+        currentUserId: currentUser.id,
+        email: currentUser.email,
+      });
       navigate(redirectTarget, { replace: true });
     }
   }, [currentUser, location.state, navigate]);
@@ -107,6 +113,7 @@ function LoginPage() {
 
   const callbackMessage = searchParams.get("message");
   const queryError = searchParams.get("error");
+  const latestDebugEntry = getAuthDebugLog().at(-1);
 
   const loginError =
     queryError === "oauth_failed" && callbackMessage
@@ -235,6 +242,13 @@ function LoginPage() {
             {loginError ? (
               <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                 {loginError}
+              </div>
+            ) : null}
+
+            {queryError === "oauth_failed" ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-6 text-slate-600">
+                Open the browser console and look for <span className="font-semibold">[AuthDebug]</span> entries.
+                Latest event: <span className="font-semibold">{latestDebugEntry?.event ?? "none"}</span>
               </div>
             ) : null}
 
