@@ -1,17 +1,11 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
+import { AuthContext } from "./auth-context.js";
 import {
   clearAuthDebugLog,
   logAuthDebug,
   logAuthDebugError,
 } from "../lib/authDebug.js";
 import { isSupabaseConfigured, supabase } from "../lib/supabaseClient.js";
-
-const AuthContext = createContext(null);
 
 function buildAuthCallbackUrl() {
   if (typeof window === "undefined") {
@@ -460,5 +454,3 @@ export function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-export { AuthContext };
