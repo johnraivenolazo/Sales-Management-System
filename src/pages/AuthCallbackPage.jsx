@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
-import { logAuthDebug } from "../lib/authDebug.js";
 
 function AuthCallbackPage() {
   const navigate = useNavigate();
@@ -11,25 +10,8 @@ function AuthCallbackPage() {
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
     const providerError =
       hashParams.get("error_description") || hashParams.get("error");
-    const providerErrorCode = hashParams.get("error_code");
-
-    logAuthDebug("auth.callback.enter", {
-      href: window.location.href,
-      search: window.location.search,
-      hash: window.location.hash,
-      providerError,
-      providerErrorCode,
-      isAuthLoading,
-      hasCurrentUser: Boolean(currentUser),
-      guardReason,
-      authError,
-    });
 
     if (providerError) {
-      logAuthDebug("auth.callback.providerError", {
-        providerError,
-        providerErrorCode,
-      });
       navigate(
         `/login?error=oauth_failed&message=${encodeURIComponent(providerError)}`,
         { replace: true },
@@ -38,34 +20,24 @@ function AuthCallbackPage() {
     }
 
     if (isAuthLoading) {
-      logAuthDebug("auth.callback.waitingForSession");
       return;
     }
 
     if (currentUser) {
-      logAuthDebug("auth.callback.redirectSales", {
-        currentUserId: currentUser.id,
-        email: currentUser.email,
-      });
       navigate("/sales", { replace: true });
       return;
     }
 
     if (guardReason === "not_activated") {
-      logAuthDebug("auth.callback.redirectInactive");
       navigate("/login?error=not_activated", { replace: true });
       return;
     }
 
     if (authError) {
-      logAuthDebug("auth.callback.redirectOauthFailed", {
-        authError,
-      });
       navigate("/login?error=oauth_failed", { replace: true });
       return;
     }
 
-    logAuthDebug("auth.callback.redirectLogin");
     navigate("/login", { replace: true });
   }, [authError, currentUser, guardReason, isAuthLoading, navigate]);
 
