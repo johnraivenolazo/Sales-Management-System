@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ShellPlaceholderLayout from "./layouts/ShellPlaceholderLayout.jsx";
+import AuthCallbackPage from "./pages/AuthCallbackPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
@@ -107,13 +108,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/auth/callback",
-            element: (
-              <PlaceholderPage
-                title="Auth Callback"
-                routePath="/auth/callback"
-                summary="OAuth callback placeholder to be wired to the real auth flow."
-              />
-            ),
+            element: <AuthCallbackPage />,
           },
         ],
       },
