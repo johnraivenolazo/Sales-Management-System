@@ -14,6 +14,10 @@ function getCurrentUserId(currentUser) {
   return currentUser?.userid ?? currentUser?.userId ?? currentUser?.id ?? null;
 }
 
+function hasEnabledRight(rightsMap, rightCode) {
+  return Boolean(rightsMap[rightCode]);
+}
+
 export function UserRightsProvider({ children }) {
   const { currentUser, isAuthLoading } = useAuth();
   const [rights, setRights] = useState({});
@@ -78,17 +82,36 @@ export function UserRightsProvider({ children }) {
   }, [currentUser, isAuthLoading]);
 
   const userType = String(currentUser?.user_type ?? "").toUpperCase();
+  const isUser = userType === "USER";
+  const isAdmin = userType === "ADMIN";
+  const isSuperadmin = userType === "SUPERADMIN";
   const value = useMemo(
     () => ({
       rights,
       userType,
+      isUser,
+      isAdmin,
+      isSuperadmin,
       isRightsLoading: isAuthLoading || isRightsLoading,
       rightsError,
-      hasRight: (rightCode) => Boolean(rights[rightCode]),
-      canAccessDeletedItems:
-        userType === "ADMIN" || userType === "SUPERADMIN",
+      hasRight: (rightCode) => hasEnabledRight(rights, rightCode),
+      canViewSales: hasEnabledRight(rights, "SALES_VIEW"),
+      canCreateSales: hasEnabledRight(rights, "SALES_ADD"),
+      canEditSales: hasEnabledRight(rights, "SALES_EDIT"),
+      canDeleteSales: hasEnabledRight(rights, "SALES_DEL"),
+      canViewSalesDetail: hasEnabledRight(rights, "SD_VIEW"),
+      canCreateSalesDetail: hasEnabledRight(rights, "SD_ADD"),
+      canEditSalesDetail: hasEnabledRight(rights, "SD_EDIT"),
+      canDeleteSalesDetail: hasEnabledRight(rights, "SD_DEL"),
+      canViewCustomerLookup: hasEnabledRight(rights, "CUST_LOOKUP"),
+      canViewEmployeeLookup: hasEnabledRight(rights, "EMP_LOOKUP"),
+      canViewProductLookup: hasEnabledRight(rights, "PROD_LOOKUP"),
+      canViewPriceLookup: hasEnabledRight(rights, "PRICE_LOOKUP"),
+      canAccessDeletedItems: isAdmin || isSuperadmin,
+      canAccessAdmin: isAdmin || isSuperadmin,
+      canSeeStamp: !isUser,
     }),
-    [isAuthLoading, isRightsLoading, rights, rightsError, userType],
+    [isAdmin, isAuthLoading, isRightsLoading, isSuperadmin, isUser, rights, rightsError, userType],
   );
 
   return (

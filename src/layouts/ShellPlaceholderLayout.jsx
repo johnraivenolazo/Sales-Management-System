@@ -4,7 +4,16 @@ import { useRights } from "../hooks/useRights.js";
 
 function ShellPlaceholderLayout() {
   const { currentUser, signOutUser } = useAuth();
-  const { canAccessDeletedItems, userType } = useRights();
+  const {
+    canAccessAdmin,
+    canAccessDeletedItems,
+    canViewCustomerLookup,
+    canViewEmployeeLookup,
+    canViewPriceLookup,
+    canViewProductLookup,
+    canViewSales,
+    canViewSalesDetail,
+  } = useRights();
   const displayName =
     currentUser?.username ||
     [currentUser?.first_name, currentUser?.last_name].filter(Boolean).join(" ") ||
@@ -14,24 +23,24 @@ function ShellPlaceholderLayout() {
     {
       label: "Sales",
       items: [
-        ["/sales", "Transactions"],
-        ["/sales/TR000001", "Sales Detail"],
+        ...(canViewSales ? [["/sales", "Transactions"]] : []),
+        ...(canViewSalesDetail ? [["/sales/TR000001", "Sales Detail"]] : []),
       ],
     },
     {
       label: "Lookups",
       items: [
-        ["/lookups/customers", "Customers"],
-        ["/lookups/employees", "Employees"],
-        ["/lookups/products", "Products"],
-        ["/lookups/prices", "Prices"],
+        ...(canViewCustomerLookup ? [["/lookups/customers", "Customers"]] : []),
+        ...(canViewEmployeeLookup ? [["/lookups/employees", "Employees"]] : []),
+        ...(canViewProductLookup ? [["/lookups/products", "Products"]] : []),
+        ...(canViewPriceLookup ? [["/lookups/prices", "Prices"]] : []),
       ],
     },
     {
       label: "Workspace",
       items: [
         ["/reports", "Reports"],
-        ...(userType === "USER" ? [] : [["/admin", "Admin"]]),
+        ...(canAccessAdmin ? [["/admin", "Admin"]] : []),
         ...(canAccessDeletedItems ? [["/deleted-items", "Deleted Items"]] : []),
       ],
     },

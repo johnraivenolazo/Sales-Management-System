@@ -40,15 +40,40 @@ function createLineItemForm() {
   };
 }
 
+function AccessDeniedState() {
+  return (
+    <section className="rounded-[2rem] border border-amber-900/10 bg-white p-8 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
+        Sales detail access
+      </p>
+      <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+        Your current rights map does not include Sales Detail viewing access.
+      </h2>
+      <p className="mt-4 text-base leading-7 text-slate-600">
+        Ask a Sales Manager or admin-capable user to grant the correct rights before opening transaction line items.
+      </p>
+      <Link
+        className="mt-6 inline-flex rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+        to="/sales"
+      >
+        Back to transactions
+      </Link>
+    </section>
+  );
+}
+
 function SalesDetailPage() {
   const { transNo = "" } = useParams();
   const { currentUser } = useAuth();
-  const { hasRight } = useRights();
+  const {
+    canCreateSalesDetail,
+    canDeleteSalesDetail,
+    canEditSalesDetail,
+    canSeeStamp,
+    canViewSalesDetail,
+    isRightsLoading,
+  } = useRights();
   const userType = String(currentUser?.user_type ?? "").toUpperCase();
-  const canSeeStamp = userType !== "USER";
-  const canAddLine = hasRight("SD_ADD");
-  const canEditLine = hasRight("SD_EDIT");
-  const canDeleteLine = hasRight("SD_DEL");
   const {
     sale,
     details,
@@ -151,7 +176,7 @@ function SalesDetailPage() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || isRightsLoading) {
     return (
       <PageLoadingState
         compact
@@ -160,6 +185,10 @@ function SalesDetailPage() {
         description="Preparing the transaction header, product lookups, and line-item workspace."
       />
     );
+  }
+
+  if (!canViewSalesDetail) {
+    return <AccessDeniedState />;
   }
 
   if (error || !sale) {
@@ -281,7 +310,7 @@ function SalesDetailPage() {
             </div>
           </div>
 
-          {canAddLine ? (
+          {canCreateSalesDetail ? (
             <button
               className="inline-flex rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
               onClick={openCreateDialog}
@@ -359,9 +388,9 @@ function SalesDetailPage() {
               ) : null}
             </dl>
 
-            {(canEditLine || canDeleteLine) ? (
+            {(canEditSalesDetail || canDeleteSalesDetail) ? (
               <div className="mt-5 flex flex-wrap gap-3">
-                {canEditLine ? (
+                {canEditSalesDetail ? (
                   <button
                     className="inline-flex rounded-full border border-slate-900/10 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50"
                     onClick={() => openEditDialog(detail)}
@@ -370,7 +399,7 @@ function SalesDetailPage() {
                     Edit line
                   </button>
                 ) : null}
-                {canDeleteLine ? (
+                {canDeleteSalesDetail ? (
                   <button
                     className="inline-flex rounded-full border border-rose-900/15 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                     onClick={() => openDeleteDialog(detail)}
@@ -413,7 +442,7 @@ function SalesDetailPage() {
                     Stamp
                   </th>
                 ) : null}
-                {(canEditLine || canDeleteLine) ? (
+                {(canEditSalesDetail || canDeleteSalesDetail) ? (
                   <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
                     Manage
                   </th>
@@ -442,10 +471,10 @@ function SalesDetailPage() {
                   {canSeeStamp ? (
                     <td className="px-5 py-4 text-sm text-slate-500">{detail.stamp || "N/A"}</td>
                   ) : null}
-                  {(canEditLine || canDeleteLine) ? (
+                  {(canEditSalesDetail || canDeleteSalesDetail) ? (
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap gap-2">
-                        {canEditLine ? (
+                        {canEditSalesDetail ? (
                           <button
                             className="inline-flex rounded-full border border-slate-900/10 px-3 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50"
                             onClick={() => openEditDialog(detail)}
@@ -454,7 +483,7 @@ function SalesDetailPage() {
                             Edit
                           </button>
                         ) : null}
-                        {canDeleteLine ? (
+                        {canDeleteSalesDetail ? (
                           <button
                             className="inline-flex rounded-full border border-rose-900/15 px-3 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                             onClick={() => openDeleteDialog(detail)}
