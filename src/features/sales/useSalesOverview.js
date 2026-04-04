@@ -96,6 +96,7 @@ function buildEnrichedSales({
 
 export function useSalesOverview(userType) {
   const [sales, setSales] = useState([]);
+  const [reloadToken, setReloadToken] = useState(0);
   const [filters, setFilters] = useState({
     query: "",
     customer: "ALL",
@@ -153,7 +154,7 @@ export function useSalesOverview(userType) {
     return () => {
       active = false;
     };
-  }, [userType]);
+  }, [reloadToken, userType]);
 
   const filteredSales = useMemo(() => {
     const normalizedQuery = filters.query.trim().toLowerCase();
@@ -222,13 +223,31 @@ export function useSalesOverview(userType) {
     );
   }, [sales]);
 
+  const employeeOptions = useMemo(() => {
+    const uniqueEmployees = new Map();
+
+    sales.forEach((sale) => {
+      uniqueEmployees.set(sale.empNo, {
+        value: sale.empNo,
+        label: sale.employeeName,
+      });
+    });
+
+    return Array.from(uniqueEmployees.values()).sort((left, right) =>
+      left.label.localeCompare(right.label),
+    );
+  }, [sales]);
+
   return {
+    allSales: sales,
     sales: filteredSales,
     metrics,
     filters,
     setFilters,
     customerOptions,
+    employeeOptions,
     isLoading,
     error,
+    refreshOverview: () => setReloadToken((currentValue) => currentValue + 1),
   };
 }

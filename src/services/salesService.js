@@ -17,12 +17,18 @@ function normalizeUserType(userType) {
   return String(userType ?? "").trim().toUpperCase();
 }
 
-function cleanSalePayload({ salesDate, custNo, empNo }) {
-  return {
+function cleanSalePayload({ transNo, salesDate, custNo, empNo }) {
+  const payload = {
     salesDate,
     custNo: custNo?.trim() || null,
     empNo: empNo?.trim() || null,
   };
+
+  if (transNo?.trim()) {
+    payload.transNo = transNo.trim();
+  }
+
+  return payload;
 }
 
 function cleanStamp(stamp) {
