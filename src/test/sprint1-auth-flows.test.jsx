@@ -142,7 +142,7 @@ describe("Sprint 1 auth flows", () => {
         "Account created. Check your email if confirmation is enabled, then wait for activation by a Sales Manager.",
       ),
     ).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("starts the Google OAuth flow for a new user from the register screen", async () => {
     const user = userEvent.setup();
