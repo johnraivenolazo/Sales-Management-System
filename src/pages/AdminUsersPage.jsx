@@ -62,13 +62,13 @@ function MetricCard({ label, value, note, tone = "default" }) {
 
   return (
     <Motion.div variants={fadeUp}>
-      <Card className={`rounded-[1.6rem] shadow-sm ${toneClassName}`}>
-        <CardContent className="space-y-4 p-5">
+      <Card className={`rounded-[1.4rem] shadow-sm ${toneClassName}`}>
+        <CardContent className="space-y-3 p-4">
           <Badge className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] ${badgeClassName}`}>
             {label}
           </Badge>
-          <p className="text-3xl font-black tracking-tight">{value}</p>
-          {note ? <p className={`text-sm leading-6 ${noteClassName}`}>{note}</p> : null}
+          <p className="text-2xl font-black tracking-tight sm:text-3xl">{value}</p>
+          {note ? <p className={`text-xs leading-5 sm:text-sm ${noteClassName}`}>{note}</p> : null}
         </CardContent>
       </Card>
     </Motion.div>
@@ -225,12 +225,17 @@ function AdminUsersPage() {
   }
 
   return (
-    <Motion.div animate="show" className="grid gap-6" initial="hidden" variants={staggerContainer}>
-      <Motion.section variants={scaleIn}>
+    <Motion.div
+      animate="show"
+      className="grid min-w-0 gap-4 xl:min-h-[calc(100dvh-8.5rem)] xl:grid-rows-[auto_auto_minmax(24rem,1fr)]"
+      initial="hidden"
+      variants={staggerContainer}
+    >
+      <Motion.section className="min-w-0" variants={scaleIn}>
         <Card className="overflow-hidden rounded-[2.6rem] border-white/80 bg-white/95 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
-          <div className="grid gap-0 xl:grid-cols-[1.18fr_0.82fr]">
-            <div className="bg-[linear-gradient(135deg,#0d1220_0%,#1c2439_42%,#2f425f_100%)] px-6 py-7 text-white sm:px-8">
-              <div className="flex flex-wrap gap-3">
+          <div className="grid gap-0">
+            <div className="border-b border-slate-900/6 bg-[linear-gradient(135deg,#0d1220_0%,#1c2439_42%,#2f425f_100%)] px-5 py-5 text-white sm:px-7">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-300 hover:bg-white/10">
                   Admin
                 </Badge>
@@ -238,16 +243,28 @@ function AdminUsersPage() {
                   SUPERADMIN locked
                 </Badge>
               </div>
-              <h2 className="mt-5 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">
-                Manage users
-              </h2>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
-                Activate or deactivate accounts. SUPERADMIN rows stay locked.
-              </p>
+              <div className="mt-4 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(17rem,25rem)] xl:items-end">
+                <div className="min-w-0 max-w-2xl">
+                  <h2 className="max-w-2xl text-3xl font-black tracking-tight sm:text-[2.6rem]">
+                    Manage users
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/78 sm:text-[15px]">
+                    Activate, deactivate, and audit account status. SUPERADMIN rows stay locked.
+                  </p>
+                </div>
+                <div className="grid min-w-0 gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                  <div className="rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-sm leading-6 text-white/72 backdrop-blur-sm">
+                    Search and update account status from one workspace.
+                  </div>
+                  <div className="rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-sm leading-6 text-white/72 backdrop-blur-sm">
+                    SUPERADMIN rows stay visible for audits and remain locked.
+                  </div>
+                </div>
+              </div>
             </div>
 
             <Motion.div
-              className="grid gap-4 bg-[#efe3cd] px-6 py-7 sm:grid-cols-2 xl:grid-cols-1 xl:px-8"
+              className="grid min-w-0 gap-3 bg-[#efe3cd] px-5 py-4 sm:grid-cols-2 xl:grid-cols-4 xl:px-7"
               variants={staggerContainer}
             >
               <MetricCard label="Users in view" value={metrics.total} />
@@ -259,15 +276,15 @@ function AdminUsersPage() {
         </Card>
       </Motion.section>
 
-      <Motion.section variants={fadeUp}>
+      <Motion.section className="min-w-0" variants={fadeUp}>
         <Card className="rounded-[2rem] border-white/80 bg-white/94 shadow-sm">
-          <CardContent className="grid gap-4 p-5 xl:grid-cols-[1.5fr_0.8fr_0.8fr]">
+          <CardContent className="grid gap-3 p-4 xl:grid-cols-[1.5fr_0.8fr_0.8fr]">
             <label className="grid gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                 Search
               </span>
               <Input
-                className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                className="h-11 rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Name, email, or user ID"
                 type="search"
@@ -280,7 +297,7 @@ function AdminUsersPage() {
                 Role
               </span>
               <select
-                className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
                 onChange={(event) => setRoleFilter(event.target.value)}
                 value={roleFilter}
               >
@@ -296,7 +313,7 @@ function AdminUsersPage() {
                 Status
               </span>
               <select
-                className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
                 onChange={(event) => setStatusFilter(event.target.value)}
                 value={statusFilter}
               >
@@ -395,20 +412,21 @@ function AdminUsersPage() {
             })}
           </div>
 
-          <Motion.section className="hidden xl:block" variants={fadeUp}>
-            <Card className="overflow-hidden rounded-[2rem] border-white/80 bg-white/95 shadow-sm">
-              <CardContent className="p-0">
-                <Table>
+          <Motion.section className="hidden min-h-0 min-w-0 xl:block" variants={fadeUp}>
+            <Card className="flex min-h-[24rem] min-w-0 overflow-hidden rounded-[2rem] border-white/80 bg-white/95 shadow-sm xl:h-full">
+              <CardContent className="flex min-h-0 flex-1 p-0">
+                <div className="app-scrollbar workspace-table-scroll min-h-0 min-w-0 flex-1">
+                  <Table>
                   <TableHeader className="bg-slate-950">
                     <TableRow className="border-slate-900/5 hover:bg-slate-950">
-                      <TableHead className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">User</TableHead>
-                      <TableHead className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Role</TableHead>
-                      <TableHead className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Status</TableHead>
-                      <TableHead className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Username</TableHead>
+                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">User</TableHead>
+                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Role</TableHead>
+                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Status</TableHead>
+                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Username</TableHead>
                       {canSeeStamp ? (
-                        <TableHead className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Stamp</TableHead>
+                        <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Stamp</TableHead>
                       ) : null}
-                      <TableHead className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Actions</TableHead>
+                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -421,28 +439,28 @@ function AdminUsersPage() {
 
                       return (
                         <TableRow key={user.userId}>
-                          <TableCell className="px-5 py-4 align-top">
+                          <TableCell className="px-4 py-3 align-top">
                             <p className="font-black tracking-tight text-slate-900">{getDisplayName(user)}</p>
                             <p className="mt-1 text-sm text-slate-600">{user.email || user.userId}</p>
                             <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
                               {user.userId}
                             </p>
                           </TableCell>
-                          <TableCell className="px-5 py-4 align-top">
+                          <TableCell className="px-4 py-3 align-top">
                             <UserTypePill value={user.userType} />
                           </TableCell>
-                          <TableCell className="px-5 py-4 align-top">
+                          <TableCell className="px-4 py-3 align-top">
                             <StatusPill value={user.recordStatus} />
                           </TableCell>
-                          <TableCell className="px-5 py-4 align-top text-sm text-slate-600">
+                          <TableCell className="px-4 py-3 align-top text-sm text-slate-600">
                             {user.username || "N/A"}
                           </TableCell>
                           {canSeeStamp ? (
-                            <TableCell className="px-5 py-4 align-top text-sm text-slate-500">
+                            <TableCell className="px-4 py-3 align-top text-sm text-slate-500">
                               {user.stamp || "N/A"}
                             </TableCell>
                           ) : null}
-                          <TableCell className="px-5 py-4 align-top">
+                          <TableCell className="px-4 py-3 align-top">
                             <div className="flex flex-wrap gap-2">
                               <Button
                                 className="rounded-full border-emerald-700/15 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
@@ -473,7 +491,8 @@ function AdminUsersPage() {
                       );
                     })}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </Motion.section>

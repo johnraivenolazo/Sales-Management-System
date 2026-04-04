@@ -7,12 +7,14 @@ import {
   ChevronRight,
   CircleDollarSign,
   FileStack,
+  LogOut,
   ReceiptText,
   ShieldUser,
   ShoppingBag,
+  UserRound,
   Users2,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
@@ -88,6 +90,23 @@ function matchesRoute(pathname, to, mode = "exact") {
   return pathname === to;
 }
 
+function getInitials(currentUser, displayName) {
+  const first = String(currentUser?.first_name ?? "").trim();
+  const last = String(currentUser?.last_name ?? "").trim();
+
+  if (first || last) {
+    return `${first[0] ?? ""}${last[0] ?? ""}`.toUpperCase() || "U";
+  }
+
+  return displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() || "U";
+}
+
 function ShellFrame() {
   const location = useLocation();
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
@@ -109,9 +128,13 @@ function ShellFrame() {
     [currentUser?.first_name, currentUser?.last_name].filter(Boolean).join(" ") ||
     currentUser?.email ||
     "Demo User";
+  const accountEmail = currentUser?.email || "No email saved";
   const userType = String(currentUser?.user_type ?? "USER").toUpperCase();
+  const initials = getInitials(currentUser, displayName);
   const workspaceTitle = getWorkspaceTitle(location.pathname);
   const [collapsedGroups, setCollapsedGroups] = useState({});
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef(null);
 
   const navGroups = [
     {
@@ -147,19 +170,44 @@ function ShellFrame() {
     }));
   }
 
+  useEffect(() => {
+    function handlePointerDown(event) {
+      if (!accountMenuRef.current?.contains(event.target)) {
+        setIsAccountMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event) {
+      if (event.key === "Escape") {
+        setIsAccountMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.92),transparent_24%),linear-gradient(180deg,#f8f2e8_0%,#efe5d4_100%)] text-slate-900">
-      <div className="flex min-h-screen items-stretch">
+    <div className="h-dvh overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.92),transparent_24%),linear-gradient(180deg,#f8f2e8_0%,#efe5d4_100%)] text-slate-900">
+      <div className="flex h-full min-h-0 items-stretch">
         <Sidebar className="backdrop-blur-xl">
-          <SidebarHeader className="bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255,255,255,0.9)_100%)]">
-            <BrandMark imageClassName="h-10 w-10" />
+          <SidebarHeader className="bg-transparent">
+            <BrandMark
+              className="rounded-[1.3rem] bg-white/60 px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_10px_26px_rgba(15,23,42,0.05)]"
+              imageClassName="h-8 w-8 rounded-[0.8rem]"
+            />
           </SidebarHeader>
 
           <SidebarContent>
             {navGroups.map((group) => (
               <SidebarGroup key={group.label}>
                 <button
-                  className="mb-2 flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition hover:bg-white/65"
+                  className="mb-2 flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition hover:bg-white/45"
                   onClick={() => toggleGroup(group.label)}
                   type="button"
                 >
@@ -188,7 +236,7 @@ function ShellFrame() {
                             "group flex items-center gap-3 rounded-2xl border px-3 py-3 text-sm font-medium transition",
                             isActive
                               ? "border-slate-900 bg-slate-950 text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)]"
-                              : "border-transparent bg-white/70 text-slate-700 hover:border-sidebar-border hover:bg-white hover:text-slate-950",
+                              : "border-transparent bg-white/58 text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_8px_18px_rgba(15,23,42,0.04)] hover:bg-white/82 hover:text-slate-950",
                           )
                         }
                         end={matchMode === "exact"}
@@ -249,14 +297,14 @@ function ShellFrame() {
           ) : null}
         </Sidebar>
 
-        <SidebarInset>
+        <SidebarInset className="flex min-h-0 flex-1 flex-col">
           <Motion.header
             animate="show"
-            className="sticky top-0 z-30 border-b border-slate-900/6 bg-white/78 backdrop-blur-xl"
+            className="shrink-0 border-b border-slate-900/6 bg-white/78 backdrop-blur-xl"
             initial="hidden"
             variants={fadeUp}
           >
-            <div className="mx-auto flex h-18 max-w-[1600px] items-center gap-3 px-4 py-3 sm:px-6">
+            <div className="mx-auto flex h-18 min-w-0 max-w-[1600px] items-center gap-3 px-4 py-3 sm:px-6">
               <SidebarTrigger />
 
               <div className="sm:hidden">
@@ -269,29 +317,80 @@ function ShellFrame() {
                 </h1>
               </div>
 
-              <Badge className="hidden rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 hover:bg-white sm:inline-flex">
-                {userType}
-              </Badge>
-
-              <div className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-2 text-sm shadow-sm md:flex">
-                <span className="text-slate-400">Logged in:</span>
-                <span className="max-w-[14rem] truncate font-medium text-slate-800">
-                  {displayName}
-                </span>
-              </div>
-
-              <Button
-                className="hidden rounded-full bg-slate-950 text-white hover:bg-slate-800 sm:inline-flex"
-                onClick={() => void signOutUser()}
-                type="button"
+              <div
+                className="relative hidden min-w-0 sm:flex sm:max-w-[min(17rem,42vw)] sm:flex-none sm:justify-end lg:max-w-[20rem]"
+                ref={accountMenuRef}
               >
-                Logout
-              </Button>
+                <button
+                  aria-expanded={isAccountMenuOpen}
+                  className="flex w-full max-w-full items-center justify-between gap-3 rounded-full border border-slate-200 bg-white py-1.5 pl-1.5 pr-2 shadow-sm transition hover:border-slate-300"
+                  onClick={() => setIsAccountMenuOpen((current) => !current)}
+                  type="button"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
+                    {initials}
+                  </span>
+                  <div className="min-w-0 flex-1 text-left">
+                    <p className="truncate text-sm font-semibold text-slate-900">
+                      {displayName}
+                    </p>
+                    <p className="hidden text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 lg:block">
+                      {userType}
+                    </p>
+                  </div>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 shrink-0 text-slate-400 transition",
+                      isAccountMenuOpen ? "rotate-180" : "rotate-0",
+                    )}
+                  />
+                </button>
+
+                {isAccountMenuOpen ? (
+                  <Motion.div
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className="absolute right-0 top-[calc(100%+0.65rem)] z-50 w-[min(19rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white p-3 shadow-[0_24px_60px_rgba(15,23,42,0.18)] ring-1 ring-slate-950/5"
+                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                  >
+                    <div className="flex items-start gap-3 rounded-[1.2rem] bg-slate-50 px-3 py-3">
+                      <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-950">{displayName}</p>
+                        <p className="mt-1 truncate text-sm text-slate-500">{accountEmail}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between rounded-[1.1rem] border border-slate-200 px-3 py-2">
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <UserRound className="size-4 text-slate-400" />
+                        <span>Current role</span>
+                      </div>
+                      <Badge className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600 hover:bg-white">
+                        {userType}
+                      </Badge>
+                    </div>
+
+                    <Button
+                      className="mt-3 w-full justify-center rounded-xl bg-slate-950 text-white hover:bg-slate-800"
+                      onClick={() => void signOutUser()}
+                      type="button"
+                    >
+                      <LogOut className="mr-2 size-4" />
+                      Logout
+                    </Button>
+                  </Motion.div>
+                ) : null}
+              </div>
             </div>
           </Motion.header>
 
-          <main className="mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6">
-            <Outlet />
+          <main className="app-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
+            <div className="mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6">
+              <Outlet />
+            </div>
           </main>
         </SidebarInset>
       </div>

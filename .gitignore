@@ -4,5 +4,8 @@ dist/
 .env
 .env.local
 .env.*.local
+.playwright/
+playwright-report/
+test-results/
 project_docs
 scripts

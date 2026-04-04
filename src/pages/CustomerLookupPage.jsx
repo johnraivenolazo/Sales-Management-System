@@ -109,24 +109,24 @@ function CustomerLookupPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-left">
+      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+        <div className="app-scrollbar workspace-table-scroll">
+          <table className="min-w-full border-collapse text-left text-[13px]">
             <thead className="bg-slate-900 text-white">
               <tr>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Code</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Customer</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Address</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Pay term</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Code</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Customer</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Address</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Pay term</th>
               </tr>
             </thead>
             <tbody>
               {filteredCustomers.map((customer) => (
                 <tr className="border-t border-slate-900/5" key={customer.custno}>
-                  <td className="px-5 py-4 font-black tracking-tight text-slate-900">{customer.custno}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-slate-900">{customer.custname}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{customer.address}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{customer.payterm}</td>
+                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">{customer.custno}</td>
+                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">{customer.custname}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{customer.address}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{customer.payterm}</td>
                 </tr>
               ))}
             </tbody>

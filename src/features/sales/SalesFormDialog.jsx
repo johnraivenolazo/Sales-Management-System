@@ -1,3 +1,5 @@
+import { Plus } from "lucide-react";
+
 function FieldLabel({ children }) {
   return (
     <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -15,7 +17,7 @@ function DialogFrame({ children, onClose, title, tone = "slate" }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 px-4 py-4 backdrop-blur-sm sm:items-center sm:px-6">
       <div
-        className={`max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border px-5 py-5 shadow-[0_32px_80px_rgba(15,23,42,0.28)] sm:rounded-[2rem] sm:px-7 sm:py-6 ${toneClassName}`}
+        className={`app-scrollbar max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border px-5 py-5 shadow-[0_32px_80px_rgba(15,23,42,0.28)] sm:rounded-[2rem] sm:px-7 sm:py-6 ${toneClassName}`}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -138,15 +140,12 @@ export function SalesFormDialog({
             Cancel
           </button>
           <button
-            className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             disabled={isSaving}
             type="submit"
           >
-            {isSaving
-              ? "Saving..."
-              : mode === "create"
-                ? "Create transaction"
-                : "Save changes"}
+            {!isSaving && mode === "create" ? <Plus className="size-4" /> : null}
+            {isSaving ? "Saving..." : mode === "create" ? "Create transaction" : "Save changes"}
           </button>
         </div>
       </form>

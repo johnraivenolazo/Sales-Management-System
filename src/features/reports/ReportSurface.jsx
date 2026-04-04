@@ -21,13 +21,13 @@ export function ReportMetricCard({ label, value, note, tone = "default" }) {
 
   return (
     <Motion.div variants={fadeUp}>
-      <Card className={cn("rounded-[1.6rem] shadow-sm", toneClassName)}>
-        <CardContent className="space-y-4 p-5">
+      <Card className={cn("rounded-[1.35rem] shadow-sm", toneClassName)}>
+        <CardContent className="space-y-3 p-4">
           <Badge className={cn("rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em]", badgeClassName)}>
             {label}
           </Badge>
-          <p className="text-3xl font-black tracking-tight">{value}</p>
-          {note ? <p className={cn("text-sm leading-6", noteClassName)}>{note}</p> : null}
+          <p className="text-[1.75rem] font-black tracking-tight">{value}</p>
+          {note ? <p className={cn("text-sm leading-5", noteClassName)}>{note}</p> : null}
         </CardContent>
       </Card>
     </Motion.div>
@@ -37,15 +37,15 @@ export function ReportMetricCard({ label, value, note, tone = "default" }) {
 export function ReportPanel({ title, description, children, actions = null }) {
   return (
     <Motion.section variants={fadeUp}>
-      <Card className="rounded-[2rem] border-white/80 bg-white/94 shadow-[0_24px_80px_rgba(15,23,42,0.06)]">
-        <CardHeader className="px-6 pt-6">
+      <Card className="rounded-[1.75rem] border-white/80 bg-white/94 shadow-[0_24px_80px_rgba(15,23,42,0.06)]">
+        <CardHeader className="px-5 pt-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="max-w-2xl">
-              <CardTitle className="text-2xl font-black tracking-tight text-slate-950">
+              <CardTitle className="text-[1.65rem] font-black tracking-tight text-slate-950">
                 {title}
               </CardTitle>
               {description ? (
-                <CardDescription className="mt-3 text-sm leading-7 text-slate-600">
+                <CardDescription className="mt-2 text-sm leading-6 text-slate-600">
                   {description}
                 </CardDescription>
               ) : null}
@@ -53,7 +53,7 @@ export function ReportPanel({ title, description, children, actions = null }) {
             {actions}
           </div>
         </CardHeader>
-        <CardContent className="px-6 pb-6">{children}</CardContent>
+        <CardContent className="px-5 pb-5">{children}</CardContent>
       </Card>
     </Motion.section>
   );
@@ -99,50 +99,52 @@ export function ReportsWorkspacePage() {
   ];
 
   return (
-    <Motion.div animate="show" className="grid gap-6" initial="hidden" variants={staggerContainer}>
+    <Motion.div animate="show" className="grid gap-5" initial="hidden" variants={staggerContainer}>
       <Motion.section variants={scaleIn}>
-        <Card className="overflow-hidden rounded-[2.6rem] border-white/80 bg-[linear-gradient(135deg,#09111f_0%,#17253a_42%,#23415f_100%)] text-white shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
-          <div className="px-6 py-7 sm:px-8">
+        <Card className="overflow-hidden rounded-[2.1rem] border-white/80 bg-[linear-gradient(135deg,#09111f_0%,#17253a_42%,#23415f_100%)] text-white shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-white/10 px-5 py-6 sm:px-6">
             <div className="flex flex-wrap gap-3">
               <Badge className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-300 hover:bg-white/10">
                 Reports
               </Badge>
             </div>
-            <h2 className="mt-5 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">
+            <h2 className="mt-4 max-w-3xl text-3xl font-black tracking-tight sm:text-[2.6rem]">
               Track sales performance
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
-              Review revenue, customers, products, and monthly trends from one place.
-            </p>
+            <div className="mt-4">
+              <p className="max-w-2xl text-sm leading-6 text-white/78 sm:text-[15px]">
+                Review revenue, customers, products, and monthly trends from one place.
+              </p>
+            </div>
+          </div>
 
-            <div className="mt-8 grid gap-4 lg:grid-cols-2">
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/8 p-5 backdrop-blur-sm">
+          <div className="grid gap-3 bg-[#f1e6d2] px-5 py-4 sm:grid-cols-2 sm:px-6">
+            <div className="rounded-[1.25rem] border border-white/80 bg-white p-4 text-slate-900 shadow-sm">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-amber-300">
                   Views available
                 </p>
-                <p className="mt-4 text-3xl font-black tracking-tight">4</p>
-                <p className="mt-3 text-sm leading-6 text-white/68">
+                <p className="mt-3 text-[1.7rem] font-black tracking-tight">4</p>
+                <p className="mt-2 text-sm leading-5 text-slate-600">
                   Employee, customer, product, and monthly views.
                 </p>
               </div>
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/8 p-5 backdrop-blur-sm">
+              <div className="rounded-[1.25rem] border border-slate-900/10 bg-slate-950 p-4 text-white shadow-sm">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-amber-300">
                   Navigation
                 </p>
-                <p className="mt-4 text-3xl font-black tracking-tight">Live</p>
-                <p className="mt-3 text-sm leading-6 text-white/68">
+                <p className="mt-3 text-[1.7rem] font-black tracking-tight">Live</p>
+                <p className="mt-2 text-sm leading-5 text-white/68">
                   Switch between employee, customer, product, and monthly views.
                 </p>
               </div>
-            </div>
           </div>
         </Card>
       </Motion.section>
 
       <Motion.section variants={fadeUp}>
-        <Card className="rounded-[2rem] border-white/80 bg-white/94 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex gap-2 overflow-x-auto pb-1">
+        <Card className="rounded-[1.75rem] border-white/80 bg-white/94 shadow-sm">
+          <CardContent className="p-3">
+            <div className="app-scrollbar flex gap-2 overflow-x-auto pb-1">
               {tabs.map(([to, label]) => (
                 <NavLink
                   key={to}
