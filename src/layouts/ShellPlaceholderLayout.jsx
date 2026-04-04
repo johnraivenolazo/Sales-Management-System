@@ -81,12 +81,12 @@ function ShellPlaceholderLayout() {
                 <h2 className="px-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                   {group.label}
                 </h2>
-                <div className="mt-3 grid gap-2">
+                <div className="mt-3 flex gap-2 overflow-x-auto pb-1 lg:grid lg:gap-2 lg:overflow-visible lg:pb-0">
                   {group.items.map(([to, label]) => (
                     <NavLink
                       key={to}
                       className={({ isActive }) =>
-                        `rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                        `shrink-0 rounded-2xl px-4 py-3 text-sm font-medium transition lg:shrink ${
                           isActive
                             ? "bg-slate-900 text-white"
                             : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -106,9 +106,7 @@ function ShellPlaceholderLayout() {
         <section className="flex-1">
           <div className="mb-5 rounded-[2rem] border border-slate-900/5 bg-white px-6 py-4 shadow-sm">
             <p className="text-sm leading-6 text-slate-600">
-              Responsive shell is live. On mobile, the navbar stacks above the
-              grouped sidebar; on desktop, the sidebar stays pinned beside the
-              content area.
+              Responsive shell is live. On mobile, grouped navigation becomes a swipeable chip rail; on desktop, the sidebar stays pinned beside the content area.
             </p>
           </div>
           <Outlet />

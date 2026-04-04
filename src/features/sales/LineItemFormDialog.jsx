@@ -61,7 +61,7 @@ export function LineItemFormDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 px-4 py-4 sm:items-center sm:px-6">
-      <div className="w-full max-w-3xl rounded-t-[2rem] border border-slate-900/5 bg-white px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6">
+      <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-slate-900/5 bg-white px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
