@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.jsx";
 import BrandMark from "@/components/BrandMark.jsx";
+import GoogleIcon from "@/components/GoogleIcon.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent } from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
@@ -144,41 +145,71 @@ function LoginPage() {
       : "Sign-in issue";
 
   return (
-    <main className="min-h-screen bg-[#f7f1e6] px-6 py-10 text-slate-900">
-      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl gap-6 lg:grid-cols-[1fr_0.95fr]">
+    <main className="min-h-screen bg-[#f7f1e6] px-4 py-6 text-slate-900 sm:px-6 sm:py-8">
+      <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-[1220px] gap-5 lg:grid-cols-[0.82fr_1fr] lg:items-stretch">
         <Motion.section
           animate="show"
-          className="rounded-[2.5rem] bg-[linear-gradient(145deg,#0b1324_0%,#17283f_45%,#234664_100%)] px-8 py-10 text-white shadow-xl"
+          className="overflow-hidden rounded-[2.25rem] bg-[linear-gradient(150deg,#0b1324_0%,#152238_48%,#1d4467_100%)] text-white shadow-[0_26px_80px_rgba(15,23,42,0.18)]"
           initial="hidden"
           variants={scaleIn}
         >
-          <Motion.div className="flex min-h-full flex-col justify-between gap-10" variants={staggerContainer}>
+          <Motion.div
+            className="flex min-h-full flex-col justify-between gap-8 px-6 py-7 sm:px-8 sm:py-8 lg:px-10 lg:py-10"
+            variants={staggerContainer}
+          >
             <Motion.div variants={fadeUp}>
-              <BrandMark imageClassName="h-14 w-14 rounded-[1.2rem]" tone="light" />
-              <h1 className="mt-10 max-w-lg text-5xl font-black tracking-tight sm:text-6xl">
-                Sign in
-              </h1>
-              <p className="mt-5 max-w-md text-base leading-7 text-white/75">
-                Use your Hope SMS account to continue.
-              </p>
+              <BrandMark imageClassName="h-11 w-11 rounded-[0.9rem]" tone="light" />
+              <div className="mt-10 max-w-[28rem]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-300">
+                  Account access
+                </p>
+                <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+                  Sign in
+                </h1>
+                <p className="mt-4 text-base leading-7 text-white/76">
+                  Access sales, reports, and admin tools with your Hope SMS account.
+                </p>
+              </div>
             </Motion.div>
 
-            <Motion.div variants={fadeUp}>
-              <div className="max-w-md border-t border-white/10 pt-5 text-sm leading-6 text-white/65">
-                New accounts need activation before protected pages are available.
-              </div>
+            <Motion.div
+              className="grid gap-3 sm:grid-cols-2"
+              variants={staggerContainer}
+            >
+              <Motion.div
+                className="rounded-[1.4rem] border border-white/10 bg-white/8 p-4 backdrop-blur-sm"
+                variants={fadeUp}
+              >
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-300">
+                  Access
+                </p>
+                <p className="mt-3 text-sm leading-6 text-white/74">
+                  Email and Google sign-in are both available from the same screen.
+                </p>
+              </Motion.div>
+              <Motion.div
+                className="rounded-[1.4rem] border border-white/10 bg-white/8 p-4 backdrop-blur-sm"
+                variants={fadeUp}
+              >
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-300">
+                  Activation
+                </p>
+                <p className="mt-3 text-sm leading-6 text-white/74">
+                  Newly created accounts stay pending until a Sales Manager activates them.
+                </p>
+              </Motion.div>
             </Motion.div>
           </Motion.div>
         </Motion.section>
 
         <Motion.section animate="show" initial="hidden" variants={scaleIn}>
-          <Card className="rounded-[2.5rem] border-white/80 bg-white/95 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-            <CardContent className="p-8">
+          <Card className="rounded-[2.25rem] border-white/80 bg-white/95 shadow-[0_26px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+            <CardContent className="p-6 sm:p-8 lg:p-9">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-900">
                   Login
                 </p>
-                <h2 className="mt-2 text-3xl font-black tracking-tight">
+                <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-[2.2rem]">
                   Welcome back
                 </h2>
               </div>
@@ -197,6 +228,7 @@ function LoginPage() {
                     aria-invalid={Boolean(errors.email)}
                     autoComplete="email"
                     className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                    data-testid="login-email"
                     name="email"
                     placeholder="name@company.com"
                     type="email"
@@ -218,6 +250,7 @@ function LoginPage() {
                     aria-invalid={Boolean(errors.password)}
                     autoComplete="current-password"
                     className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                    data-testid="login-password"
                     name="password"
                     placeholder="Minimum 8 characters"
                     type="password"
@@ -266,6 +299,7 @@ function LoginPage() {
                 <Motion.div className="grid gap-4" variants={fadeUp}>
                   <Button
                     className="h-12 rounded-full bg-slate-950 text-sm font-semibold text-white hover:bg-slate-800"
+                    data-testid="login-email-submit"
                     disabled={isSubmitting || isAuthLoading}
                     size="lg"
                     type="submit"
@@ -281,12 +315,14 @@ function LoginPage() {
 
                   <Button
                     className="h-12 rounded-full border-slate-300 text-sm font-semibold text-slate-800 hover:border-slate-900 hover:bg-slate-50"
+                    data-testid="login-google-submit"
                     disabled={isGoogleSubmitting || isAuthLoading || !isSupabaseConfigured}
                     onClick={() => void handleGoogleSignIn()}
                     size="lg"
                     type="button"
                     variant="outline"
                   >
+                    <GoogleIcon className="mr-2 h-4 w-4" />
                     {isGoogleSubmitting ? "Redirecting..." : "Continue with Google"}
                   </Button>
                 </Motion.div>

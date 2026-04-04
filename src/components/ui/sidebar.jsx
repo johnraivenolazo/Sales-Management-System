@@ -78,7 +78,7 @@ export function Sidebar({ children, className }) {
             />
             <aside
               className={cn(
-                "absolute inset-y-0 left-0 flex h-dvh max-h-dvh w-[16.5rem] max-w-[84vw] flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-[0_28px_80px_rgba(15,23,42,0.18)]",
+                "absolute inset-y-0 left-0 flex h-dvh max-h-dvh w-[15.5rem] max-w-[84vw] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(252,249,243,0.98)_0%,rgba(245,237,224,0.98)_100%)] text-sidebar-foreground shadow-[inset_-1px_0_0_rgba(148,163,184,0.12),0_28px_80px_rgba(15,23,42,0.18)]",
                 className,
               )}
             >
@@ -93,7 +93,7 @@ export function Sidebar({ children, className }) {
   return (
     <aside
       className={cn(
-        "hidden h-dvh max-h-dvh w-[16.5rem] shrink-0 overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:sticky lg:top-0 lg:flex lg:flex-col",
+        "hidden h-dvh max-h-dvh w-[15.5rem] shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(252,249,243,0.98)_0%,rgba(245,237,224,0.98)_100%)] text-sidebar-foreground shadow-[inset_-1px_0_0_rgba(148,163,184,0.12)] lg:sticky lg:top-0 lg:flex lg:flex-col",
         className,
       )}
     >
@@ -104,7 +104,7 @@ export function Sidebar({ children, className }) {
 
 export function SidebarHeader({ children, className }) {
   return (
-    <div className={cn("border-b border-sidebar-border px-4 py-4", className)}>
+    <div className={cn("px-4 py-4", className)}>
       {children}
     </div>
   );
@@ -112,7 +112,7 @@ export function SidebarHeader({ children, className }) {
 
 export function SidebarContent({ children, className }) {
   return (
-    <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4", className)}>
+    <div className={cn("app-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4", className)}>
       {children}
     </div>
   );
@@ -120,7 +120,7 @@ export function SidebarContent({ children, className }) {
 
 export function SidebarFooter({ children, className }) {
   return (
-    <div className={cn("shrink-0 border-t border-sidebar-border px-4 py-4", className)}>
+    <div className={cn("shrink-0 px-4 py-4", className)}>
       {children}
     </div>
   );
@@ -148,7 +148,7 @@ export function SidebarMenu({ children, className }) {
 }
 
 export function SidebarInset({ children, className }) {
-  return <div className={cn("min-w-0 flex-1", className)}>{children}</div>;
+  return <div className={cn("min-w-0 flex-1 overflow-hidden", className)}>{children}</div>;
 }
 
 export function SidebarTrigger({ className }) {

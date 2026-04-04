@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import { getCurrentPrice } from "../../services/lookupService.js";
 import { formatCurrency } from "./salesFormatting.js";
 
@@ -61,7 +62,7 @@ export function LineItemFormDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 px-4 py-4 sm:items-center sm:px-6">
-      <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-slate-900/5 bg-white px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6">
+      <div className="app-scrollbar max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-slate-900/5 bg-white px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
@@ -155,15 +156,12 @@ export function LineItemFormDialog({
               Cancel
             </button>
             <button
-              className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
               disabled={isSaving}
               type="submit"
             >
-              {isSaving
-                ? "Saving..."
-                : mode === "create"
-                  ? "Add line item"
-                  : "Save line item"}
+              {!isSaving && mode === "create" ? <Plus className="size-4" /> : null}
+              {isSaving ? "Saving..." : mode === "create" ? "Add line item" : "Save line item"}
             </button>
           </div>
         </form>

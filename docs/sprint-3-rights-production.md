@@ -13,6 +13,32 @@ This checklist records the Sprint 3 M4 production verification for rights, admin
 - Cascade behavior in production
 - Lookup pages remain mutation-free
 
+## Automated Coverage
+
+- Playwright coverage lives in `tests/e2e`
+- Covered automatically:
+  - email sign-in for `USER`, `ADMIN`, and `SUPERADMIN`
+  - USER access to `Sales`, `Sales Detail`, `Reports`, and all lookup pages
+  - USER blocking on `/admin` and `/deleted-items`
+  - ADMIN access to `/admin` and `/deleted-items`
+  - ADMIN activation and deactivation of a `USER` account in User Management
+  - SUPERADMIN access to `/admin` and `/deleted-items`
+  - locked `SUPERADMIN` row actions in User Management
+  - SUPERADMIN transaction create, soft-delete, recovery, line-item add/edit/delete/recover
+  - lookup dropdown population in Sales and Sales Detail dialogs
+  - price auto-fill visibility in the line-item dialog
+  - report tab loading for all 4 report views
+  - lookup pages staying mutation-free
+- Run locally with:
+  - `pnpm test:e2e`
+
+## Manual Follow-up
+
+- Google OAuth still needs manual verification in the live deployed app
+- `/auth/callback` should still be manually checked against the deployed URL
+- destructive cascade / recovery actions should be manually verified with care in production
+- DB-level `SUPERADMIN` update blocking still needs direct SQL or API evidence
+
 ## Production Environment
 
 - Live URL:

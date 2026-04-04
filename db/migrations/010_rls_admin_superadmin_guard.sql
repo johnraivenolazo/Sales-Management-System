@@ -39,12 +39,20 @@ EXECUTE FUNCTION public.guard_admin_user_update();
 DROP POLICY IF EXISTS admin_user_select ON public."user";
 DROP POLICY IF EXISTS admin_user_status_update ON public."user";
 DROP POLICY IF EXISTS admin_user_rights_select ON public.user_module_rights;
+DROP POLICY IF EXISTS user_self_select ON public."user";
+DROP POLICY IF EXISTS user_self_rights_select ON public.user_module_rights;
 
 CREATE POLICY admin_user_select
 ON public."user"
 FOR SELECT
 TO authenticated
 USING (public.current_app_user_has_right('ADM_USER'));
+
+CREATE POLICY user_self_select
+ON public."user"
+FOR SELECT
+TO authenticated
+USING (userid = public.current_app_user_id());
 
 CREATE POLICY admin_user_status_update
 ON public."user"
@@ -66,6 +74,12 @@ ON public.user_module_rights
 FOR SELECT
 TO authenticated
 USING (public.current_app_user_has_right('ADM_USER'));
+
+CREATE POLICY user_self_rights_select
+ON public.user_module_rights
+FOR SELECT
+TO authenticated
+USING (userid = public.current_app_user_id());
 
 -- Intentionally no INSERT / UPDATE / DELETE policies exist on user_module_rights.
 -- This keeps admin-facing access read-only and prevents authenticated app users

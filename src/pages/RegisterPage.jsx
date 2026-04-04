@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.jsx";
 import { Badge } from "@/components/ui/badge.jsx";
 import BrandMark from "@/components/BrandMark.jsx";
+import GoogleIcon from "@/components/GoogleIcon.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent } from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
@@ -155,33 +156,60 @@ function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f1e6] px-6 py-10 text-slate-900">
-      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+    <main className="min-h-screen bg-[#f7f1e6] px-4 py-6 text-slate-900 sm:px-6 sm:py-8">
+      <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-[1220px] gap-5 lg:grid-cols-[0.86fr_1fr] lg:items-stretch">
         <Motion.section animate="show" initial="hidden" variants={scaleIn}>
-          <Card className="rounded-[2.5rem] border-white/80 bg-[linear-gradient(145deg,#0f172a_0%,#17283f_45%,#21405d_100%)] text-white shadow-[0_30px_90px_rgba(15,23,42,0.12)]">
-            <CardContent className="p-8">
-              <BrandMark imageClassName="h-14 w-14 rounded-[1.2rem]" tone="light" />
-              <Badge className="mt-6 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-300 hover:bg-white/10">
-                Account setup
-              </Badge>
-              <h1 className="mt-6 text-5xl font-black tracking-tight sm:text-6xl">
-                Create an account
-              </h1>
-              <p className="mt-5 max-w-lg text-base leading-7 text-white/75">
-                Enter your details to request access to Hope SMS.
-              </p>
-              <Motion.div animate="show" className="mt-10 border-t border-white/10 pt-5" initial="hidden" variants={staggerContainer}>
-                <Motion.p className="max-w-md text-sm leading-6 text-white/65" variants={fadeUp}>
-                  New accounts need activation before protected pages are available.
-                </Motion.p>
+          <Card className="overflow-hidden rounded-[2.25rem] border-white/80 bg-[linear-gradient(145deg,#0f172a_0%,#17283f_45%,#21405d_100%)] text-white shadow-[0_26px_80px_rgba(15,23,42,0.12)]">
+            <CardContent className="flex min-h-full flex-col justify-between gap-8 p-6 sm:p-8 lg:p-10">
+              <div>
+                <BrandMark imageClassName="h-11 w-11 rounded-[0.9rem]" tone="light" />
+                <Badge className="mt-8 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-300 hover:bg-white/10">
+                  Account setup
+                </Badge>
+                <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+                  Create an account
+                </h1>
+                <p className="mt-4 max-w-lg text-base leading-7 text-white/75">
+                  Submit your details, then wait for a Sales Manager to activate your access.
+                </p>
+              </div>
+
+              <Motion.div
+                animate="show"
+                className="grid gap-3 sm:grid-cols-2"
+                initial="hidden"
+                variants={staggerContainer}
+              >
+                <Motion.div
+                  className="rounded-[1.4rem] border border-white/10 bg-white/8 p-4 backdrop-blur-sm"
+                  variants={fadeUp}
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-300">
+                    Setup
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-white/72">
+                    Use email registration or continue with Google from the same form.
+                  </p>
+                </Motion.div>
+                <Motion.div
+                  className="rounded-[1.4rem] border border-white/10 bg-white/8 p-4 backdrop-blur-sm"
+                  variants={fadeUp}
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-300">
+                    Access
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-white/72">
+                    Protected pages stay unavailable until the account status becomes ACTIVE.
+                  </p>
+                </Motion.div>
               </Motion.div>
             </CardContent>
           </Card>
         </Motion.section>
 
         <Motion.section animate="show" initial="hidden" variants={scaleIn}>
-          <Card className="rounded-[2.5rem] border-white/80 bg-white/95 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-            <CardContent className="p-8">
+          <Card className="rounded-[2.25rem] border-white/80 bg-white/95 shadow-[0_26px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+            <CardContent className="p-6 sm:p-8 lg:p-9">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
                   Register
@@ -365,6 +393,7 @@ function RegisterPage() {
                     type="button"
                     variant="outline"
                     >
+                    <GoogleIcon className="mr-2 h-4 w-4" />
                     {isGoogleSubmitting ? "Redirecting..." : "Register with Google"}
                   </Button>
                 </Motion.div>

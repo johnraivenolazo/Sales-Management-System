@@ -89,24 +89,24 @@ function ReportsByEmployeePage() {
                 })}
               </div>
 
-              <section className="overflow-hidden rounded-[1.6rem] border border-slate-900/6 bg-white">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full border-collapse text-left">
+              <section className="overflow-hidden rounded-[1.35rem] border border-slate-900/6 bg-white">
+                <div className="app-scrollbar overflow-x-auto">
+                  <table className="min-w-full border-collapse text-left text-[13px]">
                     <thead className="bg-slate-950 text-white">
                       <tr>
-                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Employee</th>
-                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Transactions</th>
-                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Quantity</th>
-                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Revenue</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Employee</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Transactions</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Quantity</th>
+                        <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Revenue</th>
                       </tr>
                     </thead>
                     <tbody>
                       {rows.map((row) => (
                         <tr className="border-t border-slate-900/6" key={row.empNo}>
-                          <td className="px-5 py-4 font-semibold text-slate-900">{row.employeeName}</td>
-                          <td className="px-5 py-4 text-sm text-slate-600">{formatCompactNumber(row.totalTransactions)}</td>
-                          <td className="px-5 py-4 text-sm text-slate-600">{formatQuantity(row.totalQuantity)}</td>
-                          <td className="px-5 py-4 text-sm font-semibold text-slate-900">{formatCurrency(row.totalRevenue)}</td>
+                          <td className="px-4 py-3 font-semibold text-slate-900">{row.employeeName}</td>
+                          <td className="px-4 py-3 text-sm text-slate-600">{formatCompactNumber(row.totalTransactions)}</td>
+                          <td className="px-4 py-3 text-sm text-slate-600">{formatQuantity(row.totalQuantity)}</td>
+                          <td className="px-4 py-3 text-sm font-semibold text-slate-900">{formatCurrency(row.totalRevenue)}</td>
                         </tr>
                       ))}
                     </tbody>

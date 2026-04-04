@@ -139,24 +139,24 @@ function PriceHistoryPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-left">
+      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+        <div className="app-scrollbar overflow-x-auto">
+          <table className="min-w-full border-collapse text-left text-[13px]">
             <thead className="bg-slate-900 text-white">
               <tr>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Product</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Description</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Effective date</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Unit price</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Product</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Description</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Effective date</th>
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Unit price</th>
               </tr>
             </thead>
             <tbody>
               {filteredRows.map((row) => (
                 <tr className="border-t border-slate-900/5" key={`${row.prodCode}-${row.effDate}`}>
-                  <td className="px-5 py-4 font-black tracking-tight text-slate-900">{row.prodCode}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-slate-900">{row.description}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{formatDisplayDate(row.effDate)}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{formatCurrency(row.unitPrice)}</td>
+                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">{row.prodCode}</td>
+                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">{row.description}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{formatDisplayDate(row.effDate)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{formatCurrency(row.unitPrice)}</td>
                 </tr>
               ))}
             </tbody>

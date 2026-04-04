@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PageLoadingState from "../components/PageLoadingState.jsx";
@@ -214,20 +215,20 @@ function SalesDetailPage() {
   }
 
   return (
-    <div className="grid gap-6">
-      <section className="overflow-hidden rounded-[2.5rem] border border-slate-900/5 bg-white shadow-sm">
+    <div className="grid gap-5">
+      <section className="overflow-hidden rounded-[2.1rem] border border-slate-900/5 bg-white shadow-sm">
         <div className="grid gap-0 lg:grid-cols-[1.3fr_0.9fr]">
-          <div className="bg-[linear-gradient(135deg,#111827_0%,#19253d_45%,#274567_100%)] px-6 py-7 text-white sm:px-8">
+          <div className="bg-[linear-gradient(135deg,#111827_0%,#19253d_45%,#274567_100%)] px-5 py-6 text-white sm:px-6">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">
                 Sales detail
               </p>
               <StatusBadge value={sale.record_status} />
             </div>
-            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-[2.8rem]">
               {sale.transNo}
             </h2>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75 sm:text-[15px]">
               Review the transaction header and line items.
             </p>
             <div className="mt-6 flex flex-wrap gap-3 text-sm">
@@ -243,28 +244,28 @@ function SalesDetailPage() {
             </div>
           </div>
 
-          <div className="grid gap-4 bg-[#f1e6d2] px-6 py-7 sm:grid-cols-3 lg:grid-cols-1 lg:px-8">
-            <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm">
+          <div className="grid gap-3 bg-[#f1e6d2] px-5 py-6 sm:grid-cols-3 lg:grid-cols-1 lg:px-6">
+            <article className="rounded-[1.3rem] border border-slate-900/5 bg-white p-4 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
                 Line items
               </p>
-              <p className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+              <p className="mt-3 text-[1.7rem] font-black tracking-tight text-slate-900">
                 {metrics.lineCount}
               </p>
             </article>
-            <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm">
+            <article className="rounded-[1.3rem] border border-slate-900/5 bg-white p-4 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
                 Quantity
               </p>
-              <p className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+              <p className="mt-3 text-[1.7rem] font-black tracking-tight text-slate-900">
                 {formatQuantity(metrics.quantity)}
               </p>
             </article>
-            <article className="rounded-[1.75rem] border border-slate-900/5 bg-slate-900 p-5 shadow-sm text-white">
+            <article className="rounded-[1.3rem] border border-slate-900/5 bg-slate-900 p-4 shadow-sm text-white">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
                 Estimated total
               </p>
-              <p className="mt-4 text-3xl font-black tracking-tight">
+              <p className="mt-3 text-[1.7rem] font-black tracking-tight">
                 {formatCurrency(metrics.totalAmount)}
               </p>
             </article>
@@ -272,7 +273,7 @@ function SalesDetailPage() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
+      <section className="rounded-[1.75rem] border border-slate-900/5 bg-white p-4 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
@@ -312,10 +313,11 @@ function SalesDetailPage() {
 
           {canCreateSalesDetail ? (
             <button
-              className="inline-flex rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+              className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700 hover:shadow-md"
               onClick={openCreateDialog}
               type="button"
             >
+              <Plus className="size-4" />
               Add line item
             </button>
           ) : null}
@@ -414,36 +416,36 @@ function SalesDetailPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-left">
+      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+        <div className="app-scrollbar workspace-table-scroll">
+          <table className="min-w-full border-collapse text-left text-[13px]">
             <thead className="bg-slate-900 text-white">
               <tr>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                   Product
                 </th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                   Description
                 </th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                   Quantity
                 </th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                   Unit price
                 </th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                   Row total
                 </th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                   Status
                 </th>
                 {canSeeStamp ? (
-                  <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                     Stamp
                   </th>
                 ) : null}
                 {(canEditSalesDetail || canDeleteSalesDetail) ? (
-                  <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
                     Manage
                   </th>
                 ) : null}
@@ -452,27 +454,27 @@ function SalesDetailPage() {
             <tbody>
               {details.map((detail) => (
                 <tr className="border-t border-slate-900/5 align-top" key={`${detail.transNo}-${detail.prodCode}`}>
-                  <td className="px-5 py-4 font-black tracking-tight text-slate-900">
+                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">
                     {detail.prodCode}
                   </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{detail.description}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">
+                  <td className="px-4 py-3 text-sm text-slate-600">{detail.description}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">
                     {formatQuantity(detail.quantity)} {detail.unit}
                   </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">
+                  <td className="px-4 py-3 text-sm text-slate-600">
                     {formatCurrency(detail.unitPrice)}
                   </td>
-                  <td className="px-5 py-4 text-sm font-semibold text-slate-900">
+                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">
                     {formatCurrency(detail.rowTotal)}
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="px-4 py-3">
                     <StatusBadge value={detail.record_status} />
                   </td>
                   {canSeeStamp ? (
-                    <td className="px-5 py-4 text-sm text-slate-500">{detail.stamp || "N/A"}</td>
+                    <td className="px-4 py-3 text-sm text-slate-500">{detail.stamp || "N/A"}</td>
                   ) : null}
                   {(canEditSalesDetail || canDeleteSalesDetail) ? (
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
                         {canEditSalesDetail ? (
                           <button

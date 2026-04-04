@@ -116,7 +116,7 @@ function EmployeeLookupPage() {
       </div>
 
       <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-        <div className="overflow-x-auto">
+        <div className="app-scrollbar overflow-x-auto">
           <table className="min-w-full border-collapse text-left">
             <thead className="bg-slate-900 text-white">
               <tr>

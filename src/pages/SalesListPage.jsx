@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PageLoadingState from "../components/PageLoadingState.jsx";
@@ -21,11 +22,11 @@ function MetricCard({ label, value, tone = "light" }) {
         : "bg-white text-slate-900";
 
   return (
-    <article className={`rounded-[1.75rem] border border-slate-900/5 p-5 shadow-sm ${toneClassName}`}>
+    <article className={`rounded-[1.3rem] border border-slate-900/5 p-4 shadow-sm ${toneClassName}`}>
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700/90">
         {label}
       </p>
-      <p className="mt-4 text-3xl font-black tracking-tight">{value}</p>
+      <p className="mt-3 text-[1.7rem] font-black tracking-tight">{value}</p>
     </article>
   );
 }
@@ -48,9 +49,9 @@ function StatusBadge({ value }) {
 
 function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }) {
   return (
-    <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-end">
-        <label className="grid gap-2 xl:min-w-[16rem] xl:flex-1">
+    <section className="rounded-[1.75rem] border border-slate-900/5 bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="grid min-w-[14rem] flex-1 gap-2">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             Search
           </span>
@@ -68,7 +69,7 @@ function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }
           />
         </label>
 
-        <label className="grid gap-2 xl:min-w-[15rem]">
+        <label className="grid min-w-[14rem] flex-1 gap-2">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             Customer
           </span>
@@ -91,7 +92,7 @@ function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }
           </select>
         </label>
 
-        <label className="grid gap-2 xl:min-w-[12rem]">
+        <label className="grid min-w-[11rem] flex-1 gap-2">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             Start date
           </span>
@@ -108,7 +109,7 @@ function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }
           />
         </label>
 
-        <label className="grid gap-2 xl:min-w-[12rem]">
+        <label className="grid min-w-[11rem] flex-1 gap-2">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             End date
           </span>
@@ -126,7 +127,7 @@ function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }
         </label>
 
         {isPrivilegedUser ? (
-          <label className="grid gap-2 xl:min-w-[11rem]">
+          <label className="grid min-w-[10rem] gap-2">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
               Status
             </span>
@@ -427,44 +428,41 @@ function SalesListPage() {
   }
 
   return (
-    <div className="grid gap-6">
-      <section className="overflow-hidden rounded-[2.5rem] border border-slate-900/5 bg-white shadow-sm">
-        <div className="grid gap-0 lg:grid-cols-[1.08fr_0.92fr]">
-          <div className="bg-[linear-gradient(135deg,#111827_0%,#18233d_45%,#1f3657_100%)] px-6 py-7 text-white sm:px-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">
-              Sales
-            </p>
-            <h2 className="mt-4 max-w-xl text-4xl font-black tracking-tight sm:text-[3.5rem]">
-              Transactions
-            </h2>
-            <p className="mt-4 max-w-lg text-sm leading-7 text-white/75 sm:text-base">
-              View, filter, and open transaction records.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+    <div className="grid gap-5">
+      <section className="overflow-hidden rounded-[2.1rem] border border-slate-900/5 bg-white shadow-sm">
+        <div className="border-b border-slate-900/6 bg-[linear-gradient(135deg,#111827_0%,#18233d_45%,#1f3657_100%)] px-5 py-6 text-white sm:px-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">
+                Sales
+              </p>
+              <h2 className="mt-4 max-w-xl text-3xl font-black tracking-tight sm:text-[2.6rem]">
+                Transactions
+              </h2>
+              <p className="mt-4 max-w-lg text-sm leading-6 text-white/75 sm:text-[15px]">
+                View, filter, and open transaction records.
+              </p>
+            </div>
+
+            <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:justify-end">
               <button
-                className="inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:bg-white/50 disabled:text-slate-500"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-amber-50 hover:shadow-md disabled:cursor-not-allowed disabled:bg-white/50 disabled:text-slate-500 disabled:shadow-none"
                 disabled={!canCreateSales || isRightsLoading}
                 onClick={openCreateDialog}
                 type="button"
               >
+                <Plus className="size-4" />
                 New transaction
               </button>
-              <div className="text-sm text-white/65">
-                {canCreateSales
-                  ? "Create access is available."
-                  : "Create access is not available."}
-              </div>
             </div>
           </div>
+        </div>
 
-          <div className="grid gap-4 bg-[#f1e6d2] px-6 py-7 sm:px-8">
-            <MetricCard label="Transactions in view" value={metrics.totalTransactions} tone="light" />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <MetricCard label="Line items" value={metrics.totalLineItems} tone="warm" />
-              <MetricCard label="Quantity" value={formatQuantity(metrics.totalQuantity)} tone="warm" />
-            </div>
-            <MetricCard label="Estimated total" value={formatCurrency(metrics.totalAmount)} tone="dark" />
-          </div>
+        <div className="grid gap-3 bg-[#f1e6d2] px-5 py-4 sm:grid-cols-2 xl:grid-cols-4 sm:px-6">
+          <MetricCard label="Transactions in view" value={metrics.totalTransactions} tone="light" />
+          <MetricCard label="Line items" value={metrics.totalLineItems} tone="warm" />
+          <MetricCard label="Quantity" value={formatQuantity(metrics.totalQuantity)} tone="warm" />
+          <MetricCard label="Estimated total" value={formatCurrency(metrics.totalAmount)} tone="dark" />
         </div>
       </section>
 
@@ -524,53 +522,53 @@ function SalesListPage() {
             ))}
           </div>
 
-          <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-            <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse text-left">
+          <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+            <div className="app-scrollbar workspace-table-scroll">
+              <table className="min-w-full border-collapse text-left text-[13px]">
                 <thead className="bg-slate-900 text-white">
                   <tr>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Transaction</th>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Sales date</th>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Customer</th>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Employee</th>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Items</th>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Quantity</th>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Estimated total</th>
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Status</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Transaction</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Sales date</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Customer</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Employee</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Items</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Quantity</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Estimated total</th>
+                    <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Status</th>
                     {canSeeStamp ? (
-                      <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Stamp</th>
+                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Stamp</th>
                     ) : null}
                     {(canEditSales || canDeleteSales) ? (
-                      <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Manage</th>
+                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Manage</th>
                     ) : null}
                     {canViewSalesDetail ? (
-                      <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Open</th>
+                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Open</th>
                     ) : null}
                   </tr>
                 </thead>
                 <tbody>
                   {sales.map((sale) => (
                     <tr className="border-t border-slate-900/5 align-top" key={sale.transNo}>
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3">
                         <p className="font-black tracking-tight text-slate-900">{sale.transNo}</p>
                         <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">{sale.payterm}</p>
                       </td>
-                      <td className="px-5 py-4 text-sm text-slate-600">{formatDisplayDate(sale.salesDate)}</td>
-                      <td className="px-5 py-4 text-sm font-semibold text-slate-900">{sale.customerName}</td>
-                      <td className="px-5 py-4 text-sm text-slate-600">{sale.employeeName}</td>
-                      <td className="px-5 py-4 text-sm text-slate-600">{sale.lineCount}</td>
-                      <td className="px-5 py-4 text-sm text-slate-600">{formatQuantity(sale.totalQuantity)}</td>
-                      <td className="px-5 py-4 text-sm font-semibold text-slate-900">
+                      <td className="px-4 py-3 text-sm text-slate-600">{formatDisplayDate(sale.salesDate)}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-slate-900">{sale.customerName}</td>
+                      <td className="px-4 py-3 text-sm text-slate-600">{sale.employeeName}</td>
+                      <td className="px-4 py-3 text-sm text-slate-600">{sale.lineCount}</td>
+                      <td className="px-4 py-3 text-sm text-slate-600">{formatQuantity(sale.totalQuantity)}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-slate-900">
                         {formatCurrency(sale.totalAmount)}
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3">
                         <StatusBadge value={sale.record_status} />
                       </td>
                       {canSeeStamp ? (
-                        <td className="px-5 py-4 text-sm text-slate-500">{sale.stamp || "N/A"}</td>
+                        <td className="px-4 py-3 text-sm text-slate-500">{sale.stamp || "N/A"}</td>
                       ) : null}
                       {(canEditSales || canDeleteSales) ? (
-                        <td className="px-5 py-4">
+                        <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
                             {canEditSales ? (
                               <button
@@ -594,7 +592,7 @@ function SalesListPage() {
                         </td>
                       ) : null}
                       {canViewSalesDetail ? (
-                        <td className="px-5 py-4">
+                        <td className="px-4 py-3">
                           <Link
                             className="inline-flex rounded-full border border-slate-900/10 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50"
                             to={`/sales/${sale.transNo}`}
