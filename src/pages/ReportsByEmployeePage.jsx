@@ -1,0 +1,138 @@
+import PageLoadingState from "../components/PageLoadingState.jsx";
+import {
+  ReportAlert,
+  ReportEmptyState,
+  ReportMetricCard,
+  ReportPanel,
+  ReportRefreshButton,
+} from "../features/reports/ReportSurface.jsx";
+import { useReportRows } from "../features/reports/useReportRows.js";
+import { getSalesByEmployee } from "../services/reportsService.js";
+import { formatCurrency, formatQuantity } from "../features/sales/salesFormatting.js";
+import { formatCompactNumber, getMaxValue } from "../features/reports/reportFormatting.js";
+
+function ReportsByEmployeePage() {
+  const { error, isLoading, rows, reload } = useReportRows(getSalesByEmployee);
+  const topEmployee = rows[0];
+  const totalRevenue = rows.reduce((sum, row) => sum + Number(row.totalRevenue ?? 0), 0);
+  const totalTransactions = rows.reduce((sum, row) => sum + Number(row.totalTransactions ?? 0), 0);
+  const maxRevenue = getMaxValue(rows, (row) => row.totalRevenue);
+
+  if (isLoading) {
+    return (
+      <PageLoadingState
+        compact
+        eyebrow="Reports"
+        title="Loading sales by employee"
+        description="Getting employee report data."
+      />
+    );
+  }
+
+  return (
+    <div className="grid gap-6">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <ReportMetricCard label="Employees in report" value={formatCompactNumber(rows.length)} />
+        <ReportMetricCard label="Transactions covered" tone="warm" value={formatCompactNumber(totalTransactions)} />
+        <ReportMetricCard
+          label="Top performer"
+          note={topEmployee ? topEmployee.employeeName : "No employee rows"}
+          tone="accent"
+          value={formatCurrency(topEmployee?.totalRevenue ?? 0)}
+        />
+      </div>
+
+      <ReportAlert error={error} />
+
+      {rows.length === 0 ? (
+        <ReportEmptyState
+          description="No active sales rows were returned."
+          title="No employee data available."
+        />
+      ) : (
+        <>
+          <ReportPanel
+            actions={<ReportRefreshButton onClick={reload} />}
+            description="See which employees generated the most revenue."
+            title="Employee revenue leaderboard"
+          >
+            <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="grid gap-3">
+                {rows.slice(0, 5).map((row, index) => {
+                  const width = maxRevenue === 0 ? 0 : (Number(row.totalRevenue ?? 0) / maxRevenue) * 100;
+
+                  return (
+                    <article
+                      className="rounded-[1.5rem] border border-slate-900/6 bg-[#f8f3ea] p-4"
+                      key={row.empNo}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-700">
+                            #{index + 1}
+                          </p>
+                          <h4 className="mt-2 text-lg font-black tracking-tight text-slate-900">
+                            {row.employeeName}
+                          </h4>
+                        </div>
+                        <p className="text-sm font-semibold text-slate-900">{formatCurrency(row.totalRevenue)}</p>
+                      </div>
+                      <div className="mt-4 h-2 rounded-full bg-slate-200">
+                        <div className="h-full rounded-full bg-slate-900" style={{ width: `${width}%` }} />
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
+                        <span>{formatCompactNumber(row.totalTransactions)} transactions</span>
+                        <span>{formatQuantity(row.totalQuantity)} items</span>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+
+              <section className="overflow-hidden rounded-[1.6rem] border border-slate-900/6 bg-white">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border-collapse text-left">
+                    <thead className="bg-slate-950 text-white">
+                      <tr>
+                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Employee</th>
+                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Transactions</th>
+                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Quantity</th>
+                        <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.22em]">Revenue</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((row) => (
+                        <tr className="border-t border-slate-900/6" key={row.empNo}>
+                          <td className="px-5 py-4 font-semibold text-slate-900">{row.employeeName}</td>
+                          <td className="px-5 py-4 text-sm text-slate-600">{formatCompactNumber(row.totalTransactions)}</td>
+                          <td className="px-5 py-4 text-sm text-slate-600">{formatQuantity(row.totalQuantity)}</td>
+                          <td className="px-5 py-4 text-sm font-semibold text-slate-900">{formatCurrency(row.totalRevenue)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </ReportPanel>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ReportMetricCard
+              label="Average revenue / employee"
+              note="Average across visible rows."
+              tone="warm"
+              value={formatCurrency(rows.length === 0 ? 0 : totalRevenue / rows.length)}
+            />
+            <ReportMetricCard
+              label="Total report revenue"
+              note="Revenue across visible rows."
+              value={formatCurrency(totalRevenue)}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default ReportsByEmployeePage;
