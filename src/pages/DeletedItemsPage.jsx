@@ -204,50 +204,50 @@ function DeletedItemsPage() {
       <PageLoadingState
         compact
         eyebrow="Deleted items"
-        title="Loading recovery workspace"
-        description="Preparing inactive transactions and line items for admin recovery."
+        title="Loading deleted items"
+        description="Getting inactive transactions and line items."
       />
     );
   }
 
   return (
-    <div className="grid gap-6">
-      <section className="overflow-hidden rounded-[2.5rem] border border-slate-900/5 bg-white shadow-sm">
+    <div className="grid gap-5">
+      <section className="overflow-hidden rounded-[2.1rem] border border-slate-900/5 bg-white shadow-sm">
         <div className="grid gap-0 lg:grid-cols-[1.2fr_0.95fr]">
-          <div className="bg-[linear-gradient(135deg,#1f1423_0%,#3a1834_45%,#5c2437_100%)] px-6 py-7 text-white sm:px-8">
+          <div className="bg-[linear-gradient(135deg,#1f1423_0%,#3a1834_45%,#5c2437_100%)] px-5 py-6 text-white sm:px-6">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">
               Deleted items
             </p>
-            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
-              Recovery desk for inactive transactions and line items.
+            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-[2.8rem]">
+              Recover inactive records
             </h2>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
-              This workspace keeps soft-deleted records out of normal user views while giving admin roles a focused place to inspect and recover them.
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75 sm:text-[15px]">
+              Restore transactions and line items when needed.
             </p>
           </div>
 
-          <div className="grid gap-4 bg-[#f1e6d2] px-6 py-7 sm:grid-cols-3 lg:grid-cols-1 lg:px-8">
-            <article className="rounded-[1.5rem] border border-slate-900/5 bg-white p-5 shadow-sm">
+          <div className="grid gap-3 bg-[#f1e6d2] px-5 py-6 sm:grid-cols-3 lg:grid-cols-1 lg:px-6">
+            <article className="rounded-[1.3rem] border border-slate-900/5 bg-white p-4 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
                 Transactions
               </p>
-              <p className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+              <p className="mt-3 text-[1.7rem] font-black tracking-tight text-slate-900">
                 {metrics.transactions}
               </p>
             </article>
-            <article className="rounded-[1.5rem] border border-slate-900/5 bg-white p-5 shadow-sm">
+            <article className="rounded-[1.3rem] border border-slate-900/5 bg-white p-4 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
                 Line items
               </p>
-              <p className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+              <p className="mt-3 text-[1.7rem] font-black tracking-tight text-slate-900">
                 {metrics.details}
               </p>
             </article>
-            <article className="rounded-[1.5rem] border border-slate-900/5 bg-slate-900 p-5 shadow-sm text-white">
+            <article className="rounded-[1.3rem] border border-slate-900/5 bg-slate-900 p-4 shadow-sm text-white">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
                 Estimated value
               </p>
-              <p className="mt-4 text-3xl font-black tracking-tight">
+              <p className="mt-3 text-[1.7rem] font-black tracking-tight">
                 {formatCurrency(metrics.totalValue)}
               </p>
             </article>

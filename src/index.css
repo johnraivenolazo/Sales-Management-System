@@ -26,3 +26,42 @@ body {
   margin: 0;
   min-width: 320px;
 }
+
+.app-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.app-scrollbar::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 999px;
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(100, 116, 139, 0.75) 0%, rgba(30, 41, 59, 0.72) 100%);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(71, 85, 105, 0.9) 0%, rgba(15, 23, 42, 0.88) 100%);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.app-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.workspace-table-scroll {
+  max-height: min(44rem, calc(100dvh - 22rem));
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 1279px) {
+  .workspace-table-scroll {
+    max-height: none;
+  }
+}

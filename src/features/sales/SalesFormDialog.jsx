@@ -1,3 +1,5 @@
+import { Plus } from "lucide-react";
+
 function FieldLabel({ children }) {
   return (
     <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -10,17 +12,17 @@ function DialogFrame({ children, onClose, title, tone = "slate" }) {
   const toneClassName =
     tone === "rose"
       ? "border-rose-900/10 bg-rose-50"
-      : "border-slate-900/5 bg-white";
+      : "border-slate-900/6 bg-white/95";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 px-4 py-4 sm:items-center sm:px-6">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/50 px-4 py-4 backdrop-blur-sm sm:items-center sm:px-6">
       <div
-        className={`max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6 ${toneClassName}`}
+        className={`app-scrollbar max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border px-5 py-5 shadow-[0_32px_80px_rgba(15,23,42,0.28)] sm:rounded-[2rem] sm:px-7 sm:py-6 ${toneClassName}`}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
-              Sales workspace
+              Sales
             </p>
             <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
               {title}
@@ -120,7 +122,7 @@ export function SalesFormDialog({
         </div>
 
         <div className="rounded-[1.5rem] bg-[#f7f1e6] px-5 py-4 text-sm leading-6 text-slate-700">
-          The transaction number is pre-assigned from the current highest `TR######` record so the modal matches the seeded schema and service layer.
+          Transaction numbers are assigned automatically.
         </div>
 
         {error ? (
@@ -138,15 +140,12 @@ export function SalesFormDialog({
             Cancel
           </button>
           <button
-            className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             disabled={isSaving}
             type="submit"
           >
-            {isSaving
-              ? "Saving..."
-              : mode === "create"
-                ? "Create transaction"
-                : "Save changes"}
+            {!isSaving && mode === "create" ? <Plus className="size-4" /> : null}
+            {isSaving ? "Saving..." : mode === "create" ? "Create transaction" : "Save changes"}
           </button>
         </div>
       </form>
@@ -189,7 +188,7 @@ export function ConfirmActionDialog({
             onClick={onConfirm}
             type="button"
           >
-            {isSaving ? "Processing..." : "Confirm soft delete"}
+            {isSaving ? "Processing..." : "Confirm change"}
           </button>
         </div>
       </div>

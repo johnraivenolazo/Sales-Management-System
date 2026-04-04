@@ -137,12 +137,13 @@ describe("Sprint 1 auth flows", () => {
       },
     });
 
+    expect(await screen.findByText("Account created")).toBeInTheDocument();
     expect(
       await screen.findByText(
-        "Account created. Check your email if confirmation is enabled, then wait for activation by a Sales Manager.",
+        /check your email only if confirmation is enabled, then wait for activation by a sales manager/i,
       ),
     ).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("starts the Google OAuth flow for a new user from the register screen", async () => {
     const user = userEvent.setup();

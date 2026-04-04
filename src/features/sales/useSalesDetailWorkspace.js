@@ -112,7 +112,7 @@ export function useSalesDetailWorkspace(transNo, userType) {
           details: [],
           productOptions: [],
           isLoading: false,
-          error: error.message ?? "Unable to load the transaction detail workspace.",
+          error: error.message ?? "Unable to load the transaction details.",
         });
       }
     }
