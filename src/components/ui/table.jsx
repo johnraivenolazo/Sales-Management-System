@@ -9,7 +9,10 @@ function Table({
   ...props
 }) {
   return (
-    <div data-slot="table-container" className="app-scrollbar relative w-full overflow-x-auto">
+    <div
+      data-slot="table-container"
+      className="app-scrollbar relative w-full overflow-x-auto overflow-y-hidden"
+    >
       <table
         data-slot="table"
         className={cn("w-full caption-bottom text-sm", className)}
@@ -77,7 +80,7 @@ function TableHead({
     <th
       data-slot="table-head"
       className={cn(
-        "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
+        "h-10 px-2 text-left align-middle font-medium text-foreground [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props} />
@@ -92,7 +95,7 @@ function TableCell({
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
+        "p-2 align-middle [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props} />
