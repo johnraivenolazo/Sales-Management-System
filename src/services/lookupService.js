@@ -2,7 +2,7 @@ import { supabase } from "../lib/supabaseClient.js";
 
 const customerSelectClause = "custno, custname, address, payterm";
 const employeeSelectClause =
-  "empno, lastname, firstname, gender, birthdate, hiredate, sepDate";
+  "empno, lastname, firstname, gender, birthdate, hiredate, sepDate:sepdate";
 const productSelectClause = "prodCode, description, unit";
 const priceHistorySelectClause = "prodCode, effDate, unitPrice";
 
