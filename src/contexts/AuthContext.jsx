@@ -49,7 +49,6 @@ async function readAppUser(authUser) {
   if (byEmail.error && !isMissingRowError(byEmail.error)) {
     throw byEmail.error;
   }
-
   return byEmail.data ?? null;
 }
 
@@ -129,7 +128,6 @@ export function AuthProvider({ children }) {
       }
 
       const mergedUser = mergeAuthUser(nextSession.user, profile);
-
       setCurrentUser(mergedUser);
       currentUserRef.current = mergedUser;
       setGuardReason("");
@@ -212,8 +210,6 @@ export function AuthProvider({ children }) {
 
         if (event === "SIGNED_OUT") {
           void clearSessionState();
-          setGuardReason("");
-          setAuthError("");
           setIsAuthLoading(false);
           return;
         }
@@ -270,7 +266,7 @@ export function AuthProvider({ children }) {
     setGuardReason("");
     setIsAuthLoading(true);
 
-    return supabase.auth.signUp({
+    const result = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -282,6 +278,12 @@ export function AuthProvider({ children }) {
         },
       },
     });
+
+    if (result.error) {
+      setIsAuthLoading(false);
+    }
+
+    return result;
   }
 
   async function signInWithEmail({ email, password }) {
@@ -298,10 +300,16 @@ export function AuthProvider({ children }) {
     setGuardReason("");
     setIsAuthLoading(true);
 
-    return supabase.auth.signInWithPassword({
+    const result = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
+    if (result.error) {
+      setIsAuthLoading(false);
+    }
+
+    return result;
   }
 
   async function signInWithGoogle() {
@@ -318,12 +326,18 @@ export function AuthProvider({ children }) {
     setGuardReason("");
     setIsAuthLoading(true);
 
-    return supabase.auth.signInWithOAuth({
+    const result = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: buildAuthCallbackUrl(),
       },
     });
+
+    if (result.error) {
+      setIsAuthLoading(false);
+    }
+
+    return result;
   }
 
   async function signOutUser() {

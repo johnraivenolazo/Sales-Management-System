@@ -1,6 +1,19 @@
+import { motion as Motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.jsx";
+import BrandMark from "@/components/BrandMark.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { Card, CardContent } from "@/components/ui/card.jsx";
+import { Input } from "@/components/ui/input.jsx";
+import { Separator } from "@/components/ui/separator.jsx";
 import { useAuth } from "../hooks/useAuth.js";
+import {
+  consumeAuthRedirectTarget,
+  getSafeAuthRedirectTarget,
+  storeAuthRedirectTarget,
+} from "../lib/authRedirect.js";
+import { fadeUp, scaleIn, staggerContainer } from "../lib/motion.js";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -27,7 +40,9 @@ function LoginPage() {
 
   useEffect(() => {
     if (currentUser) {
-      const redirectTarget = location.state?.from?.pathname || "/sales";
+      const redirectTarget = location.state?.from
+        ? getSafeAuthRedirectTarget(location.state.from)
+        : consumeAuthRedirectTarget();
       navigate(redirectTarget, { replace: true });
     }
   }, [currentUser, location.state, navigate]);
@@ -69,6 +84,7 @@ function LoginPage() {
 
     setIsSubmitting(true);
     setSuccessMessage("");
+    storeAuthRedirectTarget(location.state?.from);
 
     const { data, error } = await signInWithEmail({
       email: formData.email.trim(),
@@ -92,6 +108,7 @@ function LoginPage() {
     setAuthError("");
     setSuccessMessage("");
     setIsGoogleSubmitting(true);
+    storeAuthRedirectTarget(location.state?.from);
 
     const { error } = await signInWithGoogle();
 
@@ -113,172 +130,181 @@ function LoginPage() {
       ? callbackMessage
       : queryError === "oauth_failed"
         ? "Google sign-in could not be completed. Please try again."
+        : queryError === "missing_profile" || guardReason === "missing_profile"
+          ? "Your auth account exists, but there is no matching app profile in the system yet. Ask a Sales Manager to provision or activate your account."
         : queryError === "not_activated" || guardReason === "not_activated"
-      ? "Your account is pending activation by a Sales Manager."
-      : authError;
+          ? "Your account is pending activation by a Sales Manager."
+          : authError;
+
+  const errorTitle =
+    queryError === "missing_profile" || guardReason === "missing_profile"
+      ? "Account not provisioned"
+      : queryError === "not_activated" || guardReason === "not_activated"
+      ? "Account pending activation"
+      : "Sign-in issue";
 
   return (
     <main className="min-h-screen bg-[#f7f1e6] px-6 py-10 text-slate-900">
-      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <section className="rounded-[2.5rem] bg-slate-900 px-8 py-10 text-white shadow-xl">
-          <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
-            Hope, Inc.
-          </span>
-          <h1 className="mt-8 max-w-xl text-5xl font-black tracking-tight sm:text-6xl">
-            Sign in to the Sales Management System.
-          </h1>
-          <p className="mt-6 max-w-lg text-base leading-7 text-white/75">
-            Use your email credentials or continue with Google. Validation is
-            already in place so the upcoming auth wiring can connect to a real
-            form instead of a placeholder.
-          </p>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2">
-            <article className="rounded-3xl border border-white/10 bg-white/5 p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
-                Ready now
+      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl gap-6 lg:grid-cols-[1fr_0.95fr]">
+        <Motion.section
+          animate="show"
+          className="rounded-[2.5rem] bg-[linear-gradient(145deg,#0b1324_0%,#17283f_45%,#234664_100%)] px-8 py-10 text-white shadow-xl"
+          initial="hidden"
+          variants={scaleIn}
+        >
+          <Motion.div className="flex min-h-full flex-col justify-between gap-10" variants={staggerContainer}>
+            <Motion.div variants={fadeUp}>
+              <BrandMark imageClassName="h-14 w-14 rounded-[1.2rem]" tone="light" />
+              <h1 className="mt-10 max-w-lg text-5xl font-black tracking-tight sm:text-6xl">
+                Sign in
+              </h1>
+              <p className="mt-5 max-w-md text-base leading-7 text-white/75">
+                Use your Hope SMS account to continue.
               </p>
-              <p className="mt-3 text-sm leading-6 text-white/70">
-                Email and password fields with inline validation and visible
-                error feedback.
-              </p>
-            </article>
-            <article className="rounded-3xl border border-white/10 bg-white/5 p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                Next step
-              </p>
-              <p className="mt-3 text-sm leading-6 text-white/70">
-                M4 can wire these actions to Supabase auth without reworking the
-                layout or states.
-              </p>
-            </article>
-          </div>
-        </section>
+            </Motion.div>
 
-        <section className="rounded-[2.5rem] border border-slate-900/5 bg-white p-8 shadow-sm">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-900">
-                Login
-              </p>
-              <h2 className="mt-2 text-3xl font-black tracking-tight">
-                Welcome back
-              </h2>
-            </div>
-            <Link
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-900"
-              to="/sales"
-            >
-              View skeleton
-            </Link>
-          </div>
-
-          <form className="mt-8 grid gap-5" noValidate onSubmit={handleSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-slate-700">Email</span>
-              <input
-                className={`rounded-2xl border px-4 py-3 text-base outline-none transition ${
-                  errors.email
-                    ? "border-red-400 bg-red-50"
-                    : "border-slate-200 bg-slate-50 focus:border-slate-900"
-                }`}
-                name="email"
-                placeholder="name@company.com"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {errors.email ? (
-                <span className="text-sm font-medium text-red-600">
-                  {errors.email}
-                </span>
-              ) : (
-                <span className="text-sm text-slate-500">
-                  Use the email connected to your Hope SMS access.
-                </span>
-              )}
-            </label>
-
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-slate-700">
-                Password
-              </span>
-              <input
-                className={`rounded-2xl border px-4 py-3 text-base outline-none transition ${
-                  errors.password
-                    ? "border-red-400 bg-red-50"
-                    : "border-slate-200 bg-slate-50 focus:border-slate-900"
-                }`}
-                name="password"
-                placeholder="Minimum 8 characters"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              {errors.password ? (
-                <span className="text-sm font-medium text-red-600">
-                  {errors.password}
-                </span>
-              ) : (
-                <span className="text-sm text-slate-500">
-                  Password validation is already ready for auth integration.
-                </span>
-              )}
-            </label>
-
-            {!isSupabaseConfigured ? (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
-                Supabase is not configured yet. Add your project URL and anon
-                key before testing sign-in.
+            <Motion.div variants={fadeUp}>
+              <div className="max-w-md border-t border-white/10 pt-5 text-sm leading-6 text-white/65">
+                New accounts need activation before protected pages are available.
               </div>
-            ) : null}
+            </Motion.div>
+          </Motion.div>
+        </Motion.section>
 
-            {loginError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                {loginError}
+        <Motion.section animate="show" initial="hidden" variants={scaleIn}>
+          <Card className="rounded-[2.5rem] border-white/80 bg-white/95 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+            <CardContent className="p-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-900">
+                  Login
+                </p>
+                <h2 className="mt-2 text-3xl font-black tracking-tight">
+                  Welcome back
+                </h2>
               </div>
-            ) : null}
 
-            {successMessage ? (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-                {successMessage}
-              </div>
-            ) : null}
-
-            <button
-              className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
-              disabled={isSubmitting || isAuthLoading}
-              type="submit"
-            >
-              {isSubmitting ? "Signing in..." : "Sign in with email"}
-            </button>
-
-            <div className="flex items-center gap-3 text-sm text-slate-400">
-              <span className="h-px flex-1 bg-slate-200"></span>
-              or
-              <span className="h-px flex-1 bg-slate-200"></span>
-            </div>
-
-            <button
-              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isGoogleSubmitting || isAuthLoading || !isSupabaseConfigured}
-              onClick={() => void handleGoogleSignIn()}
-              type="button"
-            >
-              {isGoogleSubmitting ? "Redirecting..." : "Continue with Google"}
-            </button>
-
-            <p className="text-center text-sm text-slate-500">
-              Need an account?{" "}
-              <Link
-                className="font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
-                to="/register"
+              <Motion.form
+                animate="show"
+                className="mt-8 grid gap-5"
+                initial="hidden"
+                noValidate
+                onSubmit={handleSubmit}
+                variants={staggerContainer}
               >
-                Create one here
-              </Link>
-              .
-            </p>
-          </form>
-        </section>
+                <Motion.label className="grid gap-2" variants={fadeUp}>
+                  <span className="text-sm font-semibold text-slate-700">Email</span>
+                  <Input
+                    aria-invalid={Boolean(errors.email)}
+                    autoComplete="email"
+                    className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                    name="email"
+                    placeholder="name@company.com"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                  {errors.email ? (
+                    <span className="text-sm font-medium text-red-600">
+                      {errors.email}
+                    </span>
+                  ) : null}
+                </Motion.label>
+
+                <Motion.label className="grid gap-2" variants={fadeUp}>
+                  <span className="text-sm font-semibold text-slate-700">
+                    Password
+                  </span>
+                  <Input
+                    aria-invalid={Boolean(errors.password)}
+                    autoComplete="current-password"
+                    className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                    name="password"
+                    placeholder="Minimum 8 characters"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  {errors.password ? (
+                    <span className="text-sm font-medium text-red-600">
+                      {errors.password}
+                    </span>
+                  ) : null}
+                </Motion.label>
+
+                {!isSupabaseConfigured ? (
+                  <Motion.div variants={fadeUp}>
+                    <Alert className="rounded-2xl border-amber-200 bg-amber-50 text-amber-950">
+                      <AlertTitle>Supabase not configured</AlertTitle>
+                      <AlertDescription>
+                        Add your project URL and anon key before testing sign-in.
+                      </AlertDescription>
+                    </Alert>
+                  </Motion.div>
+                ) : null}
+
+                {loginError ? (
+                  <Motion.div variants={fadeUp}>
+                    <Alert
+                      className="rounded-2xl border-red-200 bg-red-50 text-red-800"
+                      variant="destructive"
+                    >
+                      <AlertTitle>{errorTitle}</AlertTitle>
+                      <AlertDescription>{loginError}</AlertDescription>
+                    </Alert>
+                  </Motion.div>
+                ) : null}
+
+                {successMessage ? (
+                  <Motion.div variants={fadeUp}>
+                    <Alert className="rounded-2xl border-emerald-200 bg-emerald-50 text-emerald-900">
+                      <AlertTitle>Status update</AlertTitle>
+                      <AlertDescription>{successMessage}</AlertDescription>
+                    </Alert>
+                  </Motion.div>
+                ) : null}
+
+                <Motion.div className="grid gap-4" variants={fadeUp}>
+                  <Button
+                    className="h-12 rounded-full bg-slate-950 text-sm font-semibold text-white hover:bg-slate-800"
+                    disabled={isSubmitting || isAuthLoading}
+                    size="lg"
+                    type="submit"
+                  >
+                    {isSubmitting ? "Signing in..." : "Sign in with email"}
+                  </Button>
+
+                  <div className="flex items-center gap-3 text-sm text-slate-400">
+                    <Separator className="flex-1" />
+                    or
+                    <Separator className="flex-1" />
+                  </div>
+
+                  <Button
+                    className="h-12 rounded-full border-slate-300 text-sm font-semibold text-slate-800 hover:border-slate-900 hover:bg-slate-50"
+                    disabled={isGoogleSubmitting || isAuthLoading || !isSupabaseConfigured}
+                    onClick={() => void handleGoogleSignIn()}
+                    size="lg"
+                    type="button"
+                    variant="outline"
+                  >
+                    {isGoogleSubmitting ? "Redirecting..." : "Continue with Google"}
+                  </Button>
+                </Motion.div>
+
+                <Motion.p className="text-center text-sm text-slate-500" variants={fadeUp}>
+                  Need an account?{" "}
+                  <Link
+                    className="font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+                    to="/register"
+                  >
+                    Create one here
+                  </Link>
+                  .
+                </Motion.p>
+              </Motion.form>
+            </CardContent>
+          </Card>
+        </Motion.section>
       </div>
     </main>
   );

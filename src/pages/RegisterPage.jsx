@@ -1,6 +1,15 @@
+import { motion as Motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.jsx";
+import { Badge } from "@/components/ui/badge.jsx";
+import BrandMark from "@/components/BrandMark.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { Card, CardContent } from "@/components/ui/card.jsx";
+import { Input } from "@/components/ui/input.jsx";
 import { useAuth } from "../hooks/useAuth.js";
+import { consumeAuthRedirectTarget, storeAuthRedirectTarget } from "../lib/authRedirect.js";
+import { fadeUp, scaleIn, staggerContainer } from "../lib/motion.js";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -27,7 +36,7 @@ function RegisterPage() {
 
   useEffect(() => {
     if (currentUser) {
-      navigate("/sales", { replace: true });
+      navigate(consumeAuthRedirectTarget(), { replace: true });
     }
   }, [currentUser, navigate]);
 
@@ -82,6 +91,7 @@ function RegisterPage() {
 
     setIsSubmitting(true);
     setSuccessMessage("");
+    storeAuthRedirectTarget("/sales");
 
     const { data, error } = await signUpWithEmail({
       email: formData.email.trim(),
@@ -92,7 +102,11 @@ function RegisterPage() {
     });
 
     if (error) {
-      setAuthError(error.message);
+      const nextMessage =
+        error.code === "email_provider_disabled"
+          ? "Email/password sign-up is disabled in Supabase. If you want email login without verification-email cost, re-enable the Email provider and turn Confirm Email off. Otherwise use Google registration."
+          : error.message;
+      setAuthError(nextMessage);
       setIsSubmitting(false);
       return;
     }
@@ -110,6 +124,7 @@ function RegisterPage() {
     setAuthError("");
     setSuccessMessage("");
     setIsGoogleSubmitting(true);
+    storeAuthRedirectTarget("/sales");
 
     const { error } = await signInWithGoogle();
 
@@ -123,205 +138,224 @@ function RegisterPage() {
     setIsGoogleSubmitting(false);
   }
 
-  const inputClassName = (hasError) =>
-    `rounded-2xl border px-4 py-3 text-base outline-none transition ${
-      hasError
-        ? "border-red-400 bg-red-50"
-        : "border-slate-200 bg-slate-50 focus:border-slate-900"
-    }`;
-
   return (
     <main className="min-h-screen bg-[#f7f1e6] px-6 py-10 text-slate-900">
       <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="rounded-[2.5rem] border border-slate-900/5 bg-white p-8 shadow-sm">
-          <span className="inline-flex rounded-full border border-amber-700/15 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-800">
-            New user setup
-          </span>
-          <h1 className="mt-6 text-5xl font-black tracking-tight sm:text-6xl">
-            Create your Hope SMS account.
-          </h1>
-          <p className="mt-5 max-w-lg text-base leading-7 text-slate-600">
-            This registration UI is ready for the upcoming auth integration. It
-            already captures the fields required by the project docs and keeps
-            validation close to the user.
-          </p>
-          <div className="mt-10 grid gap-4">
-            <article className="rounded-3xl bg-slate-900 p-5 text-white">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
-                Included now
+        <Motion.section animate="show" initial="hidden" variants={scaleIn}>
+          <Card className="rounded-[2.5rem] border-white/80 bg-[linear-gradient(145deg,#0f172a_0%,#17283f_45%,#21405d_100%)] text-white shadow-[0_30px_90px_rgba(15,23,42,0.12)]">
+            <CardContent className="p-8">
+              <BrandMark imageClassName="h-14 w-14 rounded-[1.2rem]" tone="light" />
+              <Badge className="mt-6 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-300 hover:bg-white/10">
+                Account setup
+              </Badge>
+              <h1 className="mt-6 text-5xl font-black tracking-tight sm:text-6xl">
+                Create an account
+              </h1>
+              <p className="mt-5 max-w-lg text-base leading-7 text-white/75">
+                Enter your details to request access to Hope SMS.
               </p>
-              <p className="mt-3 text-sm leading-6 text-white/75">
-                First Name, Last Name, Username, Email, Password, and Google
-                register action.
-              </p>
-            </article>
-            <article className="rounded-3xl bg-[#f3ede0] p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-900">
-                Team handoff
-              </p>
-              <p className="mt-3 text-sm leading-6 text-slate-700">
-                M4 can connect this form to the real sign-up flow without
-                redesigning the screen.
-              </p>
-            </article>
-          </div>
-        </section>
+              <Motion.div animate="show" className="mt-10 border-t border-white/10 pt-5" initial="hidden" variants={staggerContainer}>
+                <Motion.p className="max-w-md text-sm leading-6 text-white/65" variants={fadeUp}>
+                  New accounts need activation before protected pages are available.
+                </Motion.p>
+              </Motion.div>
+            </CardContent>
+          </Card>
+        </Motion.section>
 
-        <section className="rounded-[2.5rem] border border-slate-900/5 bg-white p-8 shadow-sm">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
-                Register
-              </p>
-              <h2 className="mt-2 text-3xl font-black tracking-tight">
-                Sign up
-              </h2>
-            </div>
-            <Link
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-900"
-              to="/login"
-            >
-              Back to login
-            </Link>
-          </div>
+        <Motion.section animate="show" initial="hidden" variants={scaleIn}>
+          <Card className="rounded-[2.5rem] border-white/80 bg-white/95 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+            <CardContent className="p-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
+                  Register
+                </p>
+                <h2 className="mt-2 text-3xl font-black tracking-tight">
+                  Sign up
+                </h2>
+              </div>
 
-          <form className="mt-8 grid gap-5" noValidate onSubmit={handleSubmit}>
-            <div className="grid gap-5 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold text-slate-700">
-                  First Name
-                </span>
-                <input
-                  className={inputClassName(errors.firstName)}
-                  name="firstName"
-                  placeholder="Jacques"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                />
-                {errors.firstName ? (
-                  <span className="text-sm font-medium text-red-600">
-                    {errors.firstName}
+              <Motion.form
+                animate="show"
+                className="mt-8 grid gap-5"
+                initial="hidden"
+                noValidate
+                onSubmit={handleSubmit}
+                variants={staggerContainer}
+              >
+                <div className="grid gap-5 md:grid-cols-2">
+                  <Motion.label className="grid gap-2" variants={fadeUp}>
+                    <span className="text-sm font-semibold text-slate-700">
+                      First Name
+                    </span>
+                    <Input
+                      aria-invalid={Boolean(errors.firstName)}
+                      autoComplete="given-name"
+                      className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                      name="firstName"
+                      placeholder="Jacques"
+                      type="text"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                    />
+                    {errors.firstName ? (
+                      <span className="text-sm font-medium text-red-600">
+                        {errors.firstName}
+                      </span>
+                    ) : null}
+                  </Motion.label>
+
+                  <Motion.label className="grid gap-2" variants={fadeUp}>
+                    <span className="text-sm font-semibold text-slate-700">
+                      Last Name
+                    </span>
+                    <Input
+                      aria-invalid={Boolean(errors.lastName)}
+                      autoComplete="family-name"
+                      className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                      name="lastName"
+                      placeholder="Carigma"
+                      type="text"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                    />
+                    {errors.lastName ? (
+                      <span className="text-sm font-medium text-red-600">
+                        {errors.lastName}
+                      </span>
+                    ) : null}
+                  </Motion.label>
+                </div>
+
+                <Motion.label className="grid gap-2" variants={fadeUp}>
+                  <span className="text-sm font-semibold text-slate-700">
+                    Username
                   </span>
-                ) : null}
-              </label>
+                  <Input
+                    aria-invalid={Boolean(errors.username)}
+                    autoComplete="username"
+                    className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                    name="username"
+                    placeholder="jax-rgb"
+                    type="text"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                  {errors.username ? (
+                    <span className="text-sm font-medium text-red-600">
+                      {errors.username}
+                    </span>
+                  ) : null}
+                </Motion.label>
 
-              <label className="grid gap-2">
-                <span className="text-sm font-semibold text-slate-700">
-                  Last Name
-                </span>
-                <input
-                  className={inputClassName(errors.lastName)}
-                  name="lastName"
-                  placeholder="Carigma"
-                  type="text"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                />
-                {errors.lastName ? (
-                  <span className="text-sm font-medium text-red-600">
-                    {errors.lastName}
+                <Motion.label className="grid gap-2" variants={fadeUp}>
+                  <span className="text-sm font-semibold text-slate-700">Email</span>
+                  <Input
+                    aria-invalid={Boolean(errors.email)}
+                    autoComplete="email"
+                    className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                    name="email"
+                    placeholder="name@company.com"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                  {errors.email ? (
+                    <span className="text-sm font-medium text-red-600">
+                      {errors.email}
+                    </span>
+                  ) : null}
+                </Motion.label>
+
+                <Motion.label className="grid gap-2" variants={fadeUp}>
+                  <span className="text-sm font-semibold text-slate-700">
+                    Password
                   </span>
+                  <Input
+                    aria-invalid={Boolean(errors.password)}
+                    autoComplete="new-password"
+                    className="h-12 rounded-2xl border-slate-200 bg-slate-50 px-4 text-base focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                    name="password"
+                    placeholder="Minimum 8 characters"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  {errors.password ? (
+                    <span className="text-sm font-medium text-red-600">
+                      {errors.password}
+                    </span>
+                  ) : null}
+                </Motion.label>
+
+                {!isSupabaseConfigured ? (
+                  <Motion.div variants={fadeUp}>
+                    <Alert className="rounded-2xl border-amber-200 bg-amber-50 text-amber-950">
+                      <AlertTitle>Supabase not configured</AlertTitle>
+                      <AlertDescription>
+                        Add your project URL and anon key before testing sign-up.
+                      </AlertDescription>
+                    </Alert>
+                  </Motion.div>
                 ) : null}
-              </label>
-            </div>
 
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-slate-700">
-                Username
-              </span>
-              <input
-                className={inputClassName(errors.username)}
-                name="username"
-                placeholder="jax-rgb"
-                type="text"
-                value={formData.username}
-                onChange={handleChange}
-              />
-              {errors.username ? (
-                <span className="text-sm font-medium text-red-600">
-                  {errors.username}
-                </span>
-              ) : null}
-            </label>
+                {authError ? (
+                  <Motion.div variants={fadeUp}>
+                    <Alert
+                      className="rounded-2xl border-red-200 bg-red-50 text-red-800"
+                      variant="destructive"
+                    >
+                      <AlertTitle>Registration issue</AlertTitle>
+                      <AlertDescription>{authError}</AlertDescription>
+                    </Alert>
+                  </Motion.div>
+                ) : null}
 
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-slate-700">Email</span>
-              <input
-                className={inputClassName(errors.email)}
-                name="email"
-                placeholder="name@company.com"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {errors.email ? (
-                <span className="text-sm font-medium text-red-600">
-                  {errors.email}
-                </span>
-              ) : null}
-            </label>
+                {successMessage ? (
+                  <Motion.div variants={fadeUp}>
+                    <Alert className="rounded-2xl border-emerald-200 bg-emerald-50 text-emerald-900">
+                      <AlertTitle>Account created</AlertTitle>
+                      <AlertDescription>{successMessage}</AlertDescription>
+                    </Alert>
+                  </Motion.div>
+                ) : null}
 
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-slate-700">
-                Password
-              </span>
-              <input
-                className={inputClassName(errors.password)}
-                name="password"
-                placeholder="Minimum 8 characters"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              {errors.password ? (
-                <span className="text-sm font-medium text-red-600">
-                  {errors.password}
-                </span>
-              ) : (
-                <span className="text-sm text-slate-500">
-                  Use a password with at least 8 characters.
-                </span>
-              )}
-            </label>
+                <Motion.div className="grid gap-4" variants={fadeUp}>
+                  <Button
+                    className="h-12 rounded-full bg-slate-950 text-sm font-semibold text-white hover:bg-slate-800"
+                    disabled={isSubmitting || isAuthLoading}
+                    size="lg"
+                    type="submit"
+                  >
+                    {isSubmitting ? "Creating account..." : "Create account"}
+                  </Button>
 
-            {!isSupabaseConfigured ? (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
-                Supabase is not configured yet. Add your project URL and anon
-                key before testing sign-up.
-              </div>
-            ) : null}
+                  <Button
+                    className="h-12 rounded-full border-slate-300 text-sm font-semibold text-slate-800 hover:border-slate-900 hover:bg-slate-50"
+                    disabled={isGoogleSubmitting || isAuthLoading || !isSupabaseConfigured}
+                    onClick={() => void handleGoogleRegister()}
+                    size="lg"
+                    type="button"
+                    variant="outline"
+                    >
+                    {isGoogleSubmitting ? "Redirecting..." : "Register with Google"}
+                  </Button>
+                </Motion.div>
 
-            {authError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                {authError}
-              </div>
-            ) : null}
-
-            {successMessage ? (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-                {successMessage}
-              </div>
-            ) : null}
-
-            <button
-              className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
-              disabled={isSubmitting || isAuthLoading}
-              type="submit"
-            >
-              {isSubmitting ? "Creating account..." : "Create account"}
-            </button>
-
-            <button
-              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isGoogleSubmitting || isAuthLoading || !isSupabaseConfigured}
-              onClick={() => void handleGoogleRegister()}
-              type="button"
-            >
-              {isGoogleSubmitting ? "Redirecting..." : "Register with Google"}
-            </button>
-          </form>
-        </section>
+                <Motion.p className="text-center text-sm text-slate-500" variants={fadeUp}>
+                  Already have an account?{" "}
+                  <Link
+                    className="font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+                    to="/login"
+                  >
+                    Back to login
+                  </Link>
+                  .
+                </Motion.p>
+              </Motion.form>
+            </CardContent>
+          </Card>
+        </Motion.section>
       </div>
     </main>
   );
