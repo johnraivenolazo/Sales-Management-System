@@ -85,13 +85,13 @@ export async function getPriceHistory(prodCode) {
 }
 
 export async function getCurrentPrice(prodCode) {
-  const client = requireSupabase();
   const normalizedProdCode = normalizeProductCode(prodCode);
 
   if (!normalizedProdCode) {
     throw new Error("A product code is required to load the current price.");
   }
 
+  const client = requireSupabase();
   const { data, error } = await client
     .from("pricehist")
     .select(priceHistorySelectClause)
