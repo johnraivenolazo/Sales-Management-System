@@ -204,8 +204,8 @@ function DeletedItemsPage() {
       <PageLoadingState
         compact
         eyebrow="Deleted items"
-        title="Loading recovery workspace"
-        description="Preparing inactive transactions and line items for admin recovery."
+        title="Loading deleted items"
+        description="Getting inactive transactions and line items."
       />
     );
   }
@@ -219,10 +219,10 @@ function DeletedItemsPage() {
               Deleted items
             </p>
             <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
-              Recovery desk for inactive transactions and line items.
+              Recover inactive records
             </h2>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
-              This workspace keeps soft-deleted records out of normal user views while giving admin roles a focused place to inspect and recover them.
+              Restore transactions and line items when needed.
             </p>
           </div>
 
