@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import SalesListPage from "./pages/SalesListPage.jsx";
 import SalesDetailPlaceholderPage from "./pages/SalesDetailPlaceholderPage.jsx";
 
 export const router = createBrowserRouter([
@@ -34,13 +35,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "/sales",
-            element: (
-              <PlaceholderPage
-                title="Sales"
-                routePath="/sales"
-                summary="Transactions landing page placeholder for the upcoming sales list implementation."
-              />
-            ),
+            element: <SalesListPage />,
           },
           {
             path: "/sales/:transNo",
