@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabaseClient.js";
 
 const salesSelectClause =
-  "transNo, salesDate, custNo, empNo, record_status, stamp";
+  "transNo:transno, salesDate:salesdate, custNo:custno, empNo:empno, record_status, stamp";
 
 function requireSupabase() {
   if (!supabase) {
@@ -19,13 +19,13 @@ function normalizeUserType(userType) {
 
 function cleanSalePayload({ transNo, salesDate, custNo, empNo }) {
   const payload = {
-    salesDate,
-    custNo: custNo?.trim() || null,
-    empNo: empNo?.trim() || null,
+    salesdate: salesDate,
+    custno: custNo?.trim() || null,
+    empno: empNo?.trim() || null,
   };
 
   if (transNo?.trim()) {
-    payload.transNo = transNo.trim();
+    payload.transno = transNo.trim();
   }
 
   return payload;
@@ -41,8 +41,8 @@ export async function getSales(userType) {
   let query = client
     .from("sales")
     .select(salesSelectClause)
-    .order("salesDate", { ascending: false })
-    .order("transNo", { ascending: false });
+    .order("salesdate", { ascending: false })
+    .order("transno", { ascending: false });
 
   if (normalizeUserType(userType) === "USER") {
     query = query.eq("record_status", "ACTIVE");
@@ -77,7 +77,7 @@ export async function updateSale(transNo, payload) {
   const { data, error } = await client
     .from("sales")
     .update(cleanSalePayload(payload))
-    .eq("transNo", transNo)
+    .eq("transno", transNo)
     .select(salesSelectClause)
     .single();
 
@@ -96,7 +96,7 @@ export async function softDeleteSale(transNo, stamp = "INACTIVE") {
       record_status: "INACTIVE",
       stamp: cleanStamp(stamp) ?? "INACTIVE",
     })
-    .eq("transNo", transNo)
+    .eq("transno", transNo)
     .select(salesSelectClause)
     .single();
 
@@ -115,7 +115,7 @@ export async function recoverSale(transNo, stamp = "RECOVERED") {
       record_status: "ACTIVE",
       stamp: cleanStamp(stamp) ?? "RECOVERED",
     })
-    .eq("transNo", transNo)
+    .eq("transno", transNo)
     .select(salesSelectClause)
     .single();
 

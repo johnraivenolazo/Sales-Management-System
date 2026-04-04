@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabaseClient.js";
 
 const salesDetailSelectClause =
-  "transNo, prodCode, quantity, record_status, stamp";
+  "transNo:transno, prodCode:prodcode, quantity, record_status, stamp";
 
 function requireSupabase() {
   if (!supabase) {
@@ -24,7 +24,7 @@ function cleanStamp(stamp) {
 
 function cleanDetailPayload({ prodCode, quantity }) {
   return {
-    prodCode: prodCode?.trim(),
+    prodcode: prodCode?.trim(),
     quantity,
   };
 }
@@ -32,10 +32,10 @@ function cleanDetailPayload({ prodCode, quantity }) {
 export async function getDetailByTrans(transNo, userType) {
   const client = requireSupabase();
   let query = client
-    .from("salesDetail")
+    .from("salesdetail")
     .select(salesDetailSelectClause)
-    .eq("transNo", transNo)
-    .order("prodCode", { ascending: true });
+    .eq("transno", transNo)
+    .order("prodcode", { ascending: true });
 
   if (normalizeUserType(userType) === "USER") {
     query = query.eq("record_status", "ACTIVE");
@@ -53,9 +53,9 @@ export async function getDetailByTrans(transNo, userType) {
 export async function addDetailLine(payload) {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("salesDetail")
+    .from("salesdetail")
     .insert({
-      transNo: payload.transNo,
+      transno: payload.transNo,
       ...cleanDetailPayload(payload),
     })
     .select(salesDetailSelectClause)
@@ -75,10 +75,10 @@ export async function updateDetailLine(
 ) {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("salesDetail")
+    .from("salesdetail")
     .update(cleanDetailPayload(payload))
-    .eq("transNo", transNo)
-    .eq("prodCode", currentProdCode)
+    .eq("transno", transNo)
+    .eq("prodcode", currentProdCode)
     .select(salesDetailSelectClause)
     .single();
 
@@ -96,13 +96,13 @@ export async function softDeleteDetailLine(
 ) {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("salesDetail")
+    .from("salesdetail")
     .update({
       record_status: "INACTIVE",
       stamp: cleanStamp(stamp) ?? "INACTIVE",
     })
-    .eq("transNo", transNo)
-    .eq("prodCode", prodCode)
+    .eq("transno", transNo)
+    .eq("prodcode", prodCode)
     .select(salesDetailSelectClause)
     .single();
 
@@ -120,13 +120,13 @@ export async function recoverDetailLine(
 ) {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("salesDetail")
+    .from("salesdetail")
     .update({
       record_status: "ACTIVE",
       stamp: cleanStamp(stamp) ?? "RECOVERED",
     })
-    .eq("transNo", transNo)
-    .eq("prodCode", prodCode)
+    .eq("transno", transNo)
+    .eq("prodcode", prodCode)
     .select(salesDetailSelectClause)
     .single();
 

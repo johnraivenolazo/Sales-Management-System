@@ -150,7 +150,7 @@ describe("Sprint 2 cascade and visibility coverage", () => {
     await getDetailByTrans("TR000001", "USER");
 
     const detailBuilder = mockGuardState.builders[0];
-    expect(detailBuilder.eq).toHaveBeenCalledWith("transNo", "TR000001");
+    expect(detailBuilder.eq).toHaveBeenCalledWith("transno", "TR000001");
     expect(detailBuilder.eq).toHaveBeenCalledWith("record_status", "ACTIVE");
   });
 

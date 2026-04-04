@@ -58,11 +58,11 @@ async function getInactiveDetailRows() {
   }
 
   const { data, error } = await supabase
-    .from("salesDetail")
-    .select("transNo, prodCode, quantity, record_status, stamp")
+    .from("salesdetail")
+    .select("transNo:transno, prodCode:prodcode, quantity, record_status, stamp")
     .eq("record_status", "INACTIVE")
-    .order("transNo", { ascending: false })
-    .order("prodCode", { ascending: true });
+    .order("transno", { ascending: false })
+    .order("prodcode", { ascending: true });
 
   if (error) {
     throw error;
