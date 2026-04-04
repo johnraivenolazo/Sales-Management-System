@@ -416,17 +416,17 @@ function AdminUsersPage() {
             <Card className="flex min-h-[24rem] min-w-0 overflow-hidden rounded-[2rem] border-white/80 bg-white/95 shadow-sm xl:h-full">
               <CardContent className="flex min-h-0 flex-1 p-0">
                 <div className="app-scrollbar workspace-table-scroll min-h-0 min-w-0 flex-1">
-                  <Table>
-                  <TableHeader className="bg-slate-950">
+                  <Table className="table-fixed [&_td]:break-words [&_td]:whitespace-normal [&_th]:whitespace-normal">
+                  <TableHeader className="sticky top-0 z-10 bg-slate-950">
                     <TableRow className="border-slate-900/5 hover:bg-slate-950">
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">User</TableHead>
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Role</TableHead>
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Status</TableHead>
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Username</TableHead>
+                      <TableHead className="w-[30%] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">User</TableHead>
+                      <TableHead className="w-[12%] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Role</TableHead>
+                      <TableHead className="w-[12%] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Status</TableHead>
+                      <TableHead className="w-[14%] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Username</TableHead>
                       {canSeeStamp ? (
-                        <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Stamp</TableHead>
+                        <TableHead className="w-[16%] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Stamp</TableHead>
                       ) : null}
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Actions</TableHead>
+                      <TableHead className="w-[16%] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -441,8 +441,8 @@ function AdminUsersPage() {
                         <TableRow key={user.userId}>
                           <TableCell className="px-4 py-3 align-top">
                             <p className="font-black tracking-tight text-slate-900">{getDisplayName(user)}</p>
-                            <p className="mt-1 text-sm text-slate-600">{user.email || user.userId}</p>
-                            <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                            <p className="mt-1 break-all text-sm text-slate-600">{user.email || user.userId}</p>
+                            <p className="mt-1 break-all text-[11px] uppercase tracking-[0.18em] text-slate-400">
                               {user.userId}
                             </p>
                           </TableCell>
@@ -456,7 +456,7 @@ function AdminUsersPage() {
                             {user.username || "N/A"}
                           </TableCell>
                           {canSeeStamp ? (
-                            <TableCell className="px-4 py-3 align-top text-sm text-slate-500">
+                            <TableCell className="px-4 py-3 align-top break-words text-sm text-slate-500">
                               {user.stamp || "N/A"}
                             </TableCell>
                           ) : null}
