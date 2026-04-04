@@ -145,6 +145,7 @@ Key docs currently tracked in the repo:
 
 - `docs/db-erd.md`
 - `docs/auth-google-setup.md`
+- `docs/production-deploy-checklist.md`
 - `docs/sprint-1-log.md`
 
 ## Notes
@@ -153,3 +154,6 @@ Key docs currently tracked in the repo:
 - If you want to use Supabase CLI locally later, install and link it separately
 - Current deployed app URL:
   - `https://sales-management-system-project.vercel.app`
+- Production auth callback URL:
+  - `https://sales-management-system-project.vercel.app/auth/callback`
+- Vercel SPA rewrites are handled by `vercel.json`
