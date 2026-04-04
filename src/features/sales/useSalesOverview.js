@@ -46,8 +46,8 @@ async function getVisibleDetails(userType) {
   }
 
   let query = supabase
-    .from("salesDetail")
-    .select("transNo, prodCode, quantity, record_status");
+    .from("salesdetail")
+    .select("transNo:transno, prodCode:prodcode, quantity, record_status");
 
   if (String(userType ?? "").toUpperCase() === "USER") {
     query = query.eq("record_status", "ACTIVE");

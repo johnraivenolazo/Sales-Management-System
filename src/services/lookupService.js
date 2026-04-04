@@ -3,8 +3,8 @@ import { supabase } from "../lib/supabaseClient.js";
 const customerSelectClause = "custno, custname, address, payterm";
 const employeeSelectClause =
   "empno, lastname, firstname, gender, birthdate, hiredate, sepDate:sepdate";
-const productSelectClause = "prodCode, description, unit";
-const priceHistorySelectClause = "prodCode, effDate, unitPrice";
+const productSelectClause = "prodCode:prodcode, description, unit";
+const priceHistorySelectClause = "prodCode:prodcode, effDate:effdate, unitPrice:unitprice";
 
 function requireSupabase() {
   if (!supabase) {
@@ -54,7 +54,7 @@ export async function getProducts() {
   const { data, error } = await client
     .from("product")
     .select(productSelectClause)
-    .order("prodCode", { ascending: true });
+    .order("prodcode", { ascending: true });
 
   if (error) {
     throw error;
@@ -67,12 +67,12 @@ export async function getPriceHistory(prodCode) {
   const client = requireSupabase();
   const normalizedProdCode = normalizeProductCode(prodCode);
   let query = client
-    .from("priceHist")
+    .from("pricehist")
     .select(priceHistorySelectClause)
-    .order("effDate", { ascending: false });
+    .order("effdate", { ascending: false });
 
   if (normalizedProdCode) {
-    query = query.eq("prodCode", normalizedProdCode);
+    query = query.eq("prodcode", normalizedProdCode);
   }
 
   const { data, error } = await query;
@@ -93,10 +93,10 @@ export async function getCurrentPrice(prodCode) {
   }
 
   const { data, error } = await client
-    .from("priceHist")
+    .from("pricehist")
     .select(priceHistorySelectClause)
-    .eq("prodCode", normalizedProdCode)
-    .order("effDate", { ascending: false })
+    .eq("prodcode", normalizedProdCode)
+    .order("effdate", { ascending: false })
     .limit(1)
     .maybeSingle();
 
