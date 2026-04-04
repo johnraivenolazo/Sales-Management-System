@@ -23,6 +23,7 @@ export function UserRightsProvider({ children }) {
   const [rights, setRights] = useState({});
   const [rightsError, setRightsError] = useState("");
   const [isRightsLoading, setIsRightsLoading] = useState(true);
+  const currentUserId = getCurrentUserId(currentUser);
 
   useEffect(() => {
     let active = true;
@@ -34,8 +35,6 @@ export function UserRightsProvider({ children }) {
         }
         return;
       }
-
-      const currentUserId = getCurrentUserId(currentUser);
 
       if (!supabase || !currentUserId) {
         if (active) {
@@ -79,7 +78,7 @@ export function UserRightsProvider({ children }) {
     return () => {
       active = false;
     };
-  }, [currentUser, isAuthLoading]);
+  }, [currentUserId, isAuthLoading]);
 
   const userType = String(currentUser?.user_type ?? "").toUpperCase();
   const isUser = userType === "USER";
