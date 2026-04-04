@@ -79,9 +79,7 @@ function buildRightsRows(role) {
   }));
 }
 
-function createSupabaseMock(role) {
-  const rightsRows = buildRightsRows(role);
-
+function createSupabaseMockFromRows(rightsRows) {
   return {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
@@ -89,6 +87,17 @@ function createSupabaseMock(role) {
       })),
     })),
   };
+}
+
+function createSupabaseMock(role) {
+  return createSupabaseMockFromRows(buildRightsRows(role));
+}
+
+function buildRightsRowsFromMap(rightsMap) {
+  return RIGHT_CODES.map((rightCode) => ({
+    right_code: rightCode,
+    right_value: rightsMap[rightCode] ? 1 : 0,
+  }));
 }
 
 function RightsProbe({ rightCode }) {
@@ -122,6 +131,23 @@ function renderRightsMatrix(role, rightCode) {
     isAuthLoading: false,
   };
   mockRightsState.supabase = createSupabaseMock(role);
+
+  render(
+    <UserRightsProvider>
+      <RightsProbe rightCode={rightCode} />
+    </UserRightsProvider>,
+  );
+}
+
+function renderRightsProbe(userType, rightsMap, rightCode = "ADM_USER") {
+  mockRightsState.auth = {
+    currentUser: {
+      userid: `${userType.toLowerCase()}-user`,
+      user_type: userType,
+    },
+    isAuthLoading: false,
+  };
+  mockRightsState.supabase = createSupabaseMockFromRows(buildRightsRowsFromMap(rightsMap));
 
   render(
     <UserRightsProvider>
@@ -185,7 +211,7 @@ describe("Sprint 2 rights matrix", () => {
     expect(screen.getByTestId("can-see-stamp")).toHaveTextContent("true");
   });
 
-  it("limits Deleted Items and Admin access to admin-capable roles", async () => {
+  it("limits Deleted Items to admin-capable roles and keeps SUPERADMIN admin access available", async () => {
     renderRightsMatrix("USER", "SALES_VIEW");
 
     await waitFor(() => {
@@ -204,6 +230,30 @@ describe("Sprint 2 rights matrix", () => {
     });
 
     expect(screen.getByTestId("can-access-deleted-items")).toHaveTextContent("true");
+    expect(screen.getByTestId("can-access-admin")).toHaveTextContent("true");
+  });
+
+  it("requires ADM_USER before exposing admin access", async () => {
+    renderRightsProbe("ADMIN", {
+      ...ROLE_DEFAULTS.ADMIN,
+      ADM_USER: false,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("rights-loading")).toHaveTextContent("false");
+    });
+
+    expect(screen.getByTestId("can-access-deleted-items")).toHaveTextContent("true");
+    expect(screen.getByTestId("can-access-admin")).toHaveTextContent("false");
+
+    cleanup();
+
+    renderRightsProbe("ADMIN", ROLE_DEFAULTS.ADMIN);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("rights-loading")).toHaveTextContent("false");
+    });
+
     expect(screen.getByTestId("can-access-admin")).toHaveTextContent("true");
   });
 });
