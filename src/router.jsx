@@ -10,11 +10,15 @@ import ShellPlaceholderLayout from "./layouts/ShellPlaceholderLayout.jsx";
 import AuthCallbackPage from "./pages/AuthCallbackPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
-import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import PriceHistoryPage from "./pages/PriceHistoryPage.jsx";
 import ProductLookupPage from "./pages/ProductLookupPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import AdminUsersPage from "./pages/AdminUsersPage.jsx";
+import { ReportsWorkspacePage } from "./features/reports/ReportSurface.jsx";
+import ReportsByCustomerPage from "./pages/ReportsByCustomerPage.jsx";
+import ReportsByEmployeePage from "./pages/ReportsByEmployeePage.jsx";
+import ReportsMonthlyTrendPage from "./pages/ReportsMonthlyTrendPage.jsx";
+import ReportsTopProductsPage from "./pages/ReportsTopProductsPage.jsx";
 import SalesDetailPage from "./pages/SalesDetailPage.jsx";
 import SalesListPage from "./pages/SalesListPage.jsx";
 
@@ -87,13 +91,29 @@ export const router = createBrowserRouter([
           },
           {
             path: "/reports",
-            element: (
-              <PlaceholderPage
-                title="Reports"
-                routePath="/reports"
-                summary="Reports module placeholder for Sprint 3 pages."
-              />
-            ),
+            element: <ReportsWorkspacePage />,
+            children: [
+              {
+                index: true,
+                element: <Navigate replace to="/reports/employees" />,
+              },
+              {
+                path: "/reports/employees",
+                element: <ReportsByEmployeePage />,
+              },
+              {
+                path: "/reports/customers",
+                element: <ReportsByCustomerPage />,
+              },
+              {
+                path: "/reports/products",
+                element: <ReportsTopProductsPage />,
+              },
+              {
+                path: "/reports/monthly",
+                element: <ReportsMonthlyTrendPage />,
+              },
+            ],
           },
           {
             element: <AdminRouteGuard />,

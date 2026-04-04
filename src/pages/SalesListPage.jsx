@@ -263,7 +263,7 @@ function AccessDeniedState() {
         Your current rights map does not include Sales viewing access.
       </h2>
       <p className="mt-4 text-base leading-7 text-slate-600">
-        Ask a Sales Manager or admin-capable user to grant the correct rights before using the transactions workspace.
+        Ask an admin to grant Sales access.
       </p>
     </section>
   );
@@ -333,9 +333,9 @@ function SalesListPage() {
     return (
       <PageLoadingState
         compact
-        eyebrow="Sales workspace"
-        title="Loading transaction overview"
-        description="Pulling transactions, lookups, and summary metrics into the sales workspace."
+        eyebrow="Transactions"
+        title="Loading transactions"
+        description="Getting the latest sales records."
       />
     );
   }
@@ -429,31 +429,30 @@ function SalesListPage() {
   return (
     <div className="grid gap-6">
       <section className="overflow-hidden rounded-[2.5rem] border border-slate-900/5 bg-white shadow-sm">
-        <div className="grid gap-0 lg:grid-cols-[1.4fr_0.9fr]">
+        <div className="grid gap-0 lg:grid-cols-[1.08fr_0.92fr]">
           <div className="bg-[linear-gradient(135deg,#111827_0%,#18233d_45%,#1f3657_100%)] px-6 py-7 text-white sm:px-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">
-              Sprint 2 Sales Workspace
+              Sales
             </p>
-            <h2 className="mt-4 max-w-2xl text-4xl font-black tracking-tight sm:text-5xl">
-              Transaction control room for live sales, filters, and drill-downs.
+            <h2 className="mt-4 max-w-xl text-4xl font-black tracking-tight sm:text-[3.5rem]">
+              Transactions
             </h2>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
-              The transaction list now pulls real sales data, enriches it with customer and employee lookups,
-              and gives the team a responsive workspace before full modal CRUD lands.
+            <p className="mt-4 max-w-lg text-sm leading-7 text-white/75 sm:text-base">
+              View, filter, and open transaction records.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <button
                 className="inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:bg-white/50 disabled:text-slate-500"
                 disabled={!canCreateSales || isRightsLoading}
                 onClick={openCreateDialog}
                 type="button"
               >
-                Add transaction
+                New transaction
               </button>
-              <div className="rounded-full border border-white/15 px-4 py-3 text-sm text-white/75">
+              <div className="text-sm text-white/65">
                 {canCreateSales
-                  ? "Create flow is ready for Sales Manager roles."
-                  : "Create is hidden by the current rights map."}
+                  ? "Create access is available."
+                  : "Create access is not available."}
               </div>
             </div>
           </div>
@@ -478,7 +477,7 @@ function SalesListPage() {
 
       {error ? (
         <section className="rounded-[2rem] border border-rose-900/10 bg-rose-50 px-6 py-5 text-sm leading-6 text-rose-900 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em]">Sales workspace error</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em]">Sales error</p>
           <p className="mt-2">{error}</p>
         </section>
       ) : null}

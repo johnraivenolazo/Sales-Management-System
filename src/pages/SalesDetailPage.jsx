@@ -50,7 +50,7 @@ function AccessDeniedState() {
         Your current rights map does not include Sales Detail viewing access.
       </h2>
       <p className="mt-4 text-base leading-7 text-slate-600">
-        Ask a Sales Manager or admin-capable user to grant the correct rights before opening transaction line items.
+        Ask an admin to grant Sales Detail access.
       </p>
       <Link
         className="mt-6 inline-flex rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
@@ -182,7 +182,7 @@ function SalesDetailPage() {
         compact
         eyebrow="Sales detail"
         title={`Loading ${transNo}`}
-        description="Preparing the transaction header, product lookups, and line-item workspace."
+        description="Getting transaction details."
       />
     );
   }
@@ -228,7 +228,7 @@ function SalesDetailPage() {
               {sale.transNo}
             </h2>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
-              The transaction detail workspace combines the transaction header, current lookup context, and line-item actions in a single responsive view.
+              Review the transaction header and line items.
             </p>
             <div className="mt-6 flex flex-wrap gap-3 text-sm">
               <div className="rounded-full border border-white/15 px-4 py-3 text-white/75">
@@ -331,7 +331,7 @@ function SalesDetailPage() {
             This transaction does not have visible line items yet.
           </h3>
           <p className="mt-4 text-base leading-7 text-slate-600">
-            Add the first line item to start building the transaction payload, or switch roles if you need broader visibility.
+            Add the first line item to continue.
           </p>
         </section>
       ) : null}

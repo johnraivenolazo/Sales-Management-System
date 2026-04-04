@@ -60,8 +60,8 @@ function CustomerLookupPage() {
       <PageLoadingState
         compact
         eyebrow="Customer lookup"
-        title="Loading customer reference data"
-        description="Preparing the read-only customer directory for the sales workspace."
+        title="Loading customers"
+        description="Getting the latest customer records."
       />
     );
   }
@@ -73,8 +73,8 @@ function CustomerLookupPage() {
         { label: "Visible customers", value: filteredCustomers.length },
         { label: "Terms in use", value: new Set(filteredCustomers.map((customer) => customer.payterm)).size },
       ]}
-      summary="This lookup powers the customer dropdown in the sales create/edit flow and keeps all customer data strictly read-only."
-      title="Customer reference directory"
+      summary="Browse customer records."
+      title="Customers"
     >
       <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
         <input

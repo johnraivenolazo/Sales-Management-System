@@ -1,6 +1,6 @@
 function MetricTile({ label, value }) {
   return (
-    <article className="rounded-[1.5rem] border border-slate-900/5 bg-white p-5 shadow-sm">
+    <article className="rounded-[1.5rem] border border-slate-900/6 bg-white/95 p-5 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
         {label}
       </p>
@@ -21,7 +21,7 @@ export function LookupPageShell({
 }) {
   return (
     <div className="grid gap-6">
-      <section className="overflow-hidden rounded-[2.5rem] border border-slate-900/5 bg-white shadow-sm">
+      <section className="overflow-hidden rounded-[2.6rem] border border-slate-900/6 bg-white shadow-sm">
         <div className="grid gap-0 lg:grid-cols-[1.25fr_0.95fr]">
           <div className="bg-[linear-gradient(135deg,#0f172a_0%,#1a2842_45%,#274567_100%)] px-6 py-7 text-white sm:px-8">
             <div className="flex flex-wrap gap-3">
@@ -46,10 +46,6 @@ export function LookupPageShell({
             ))}
           </div>
         </div>
-      </section>
-
-      <section className="rounded-[2rem] border border-emerald-900/10 bg-emerald-50 px-6 py-5 text-sm leading-6 text-emerald-900 shadow-sm">
-        No create, edit, delete, or recovery controls are rendered on lookup pages. These routes are display-only by design.
       </section>
 
       {children}
