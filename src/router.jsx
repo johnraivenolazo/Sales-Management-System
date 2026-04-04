@@ -7,8 +7,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import SalesDetailPage from "./pages/SalesDetailPage.jsx";
 import SalesListPage from "./pages/SalesListPage.jsx";
-import SalesDetailPlaceholderPage from "./pages/SalesDetailPlaceholderPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/sales/:transNo",
-            element: <SalesDetailPlaceholderPage />,
+            element: <SalesDetailPage />,
           },
           {
             path: "/lookups/customers",
