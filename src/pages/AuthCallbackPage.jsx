@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { consumeAuthRedirectTarget } from "../lib/authRedirect.js";
 
 function AuthCallbackPage() {
   const navigate = useNavigate();
@@ -25,12 +26,17 @@ function AuthCallbackPage() {
     }
 
     if (currentUser) {
-      navigate("/sales", { replace: true });
+      navigate(consumeAuthRedirectTarget(), { replace: true });
       return;
     }
 
     if (guardReason === "not_activated") {
       navigate("/login?error=not_activated", { replace: true });
+      return;
+    }
+
+    if (guardReason === "missing_profile") {
+      navigate("/login?error=missing_profile", { replace: true });
       return;
     }
 

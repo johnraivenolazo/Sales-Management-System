@@ -1,4 +1,5 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
+import AdminRouteGuard from "./components/AdminRouteGuard.jsx";
 import DeletedItemsRouteGuard from "./components/DeletedItemsRouteGuard.jsx";
 import LookupRouteGuard from "./components/LookupRouteGuard.jsx";
 import CustomerLookupPage from "./pages/CustomerLookupPage.jsx";
@@ -13,6 +14,7 @@ import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import PriceHistoryPage from "./pages/PriceHistoryPage.jsx";
 import ProductLookupPage from "./pages/ProductLookupPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import AdminUsersPage from "./pages/AdminUsersPage.jsx";
 import SalesDetailPage from "./pages/SalesDetailPage.jsx";
 import SalesListPage from "./pages/SalesListPage.jsx";
 
@@ -94,14 +96,13 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: "/admin",
-            element: (
-              <PlaceholderPage
-                title="Admin"
-                routePath="/admin"
-                summary="Admin module placeholder for Sprint 3 user management."
-              />
-            ),
+            element: <AdminRouteGuard />,
+            children: [
+              {
+                path: "/admin",
+                element: <AdminUsersPage />,
+              },
+            ],
           },
           {
             element: <DeletedItemsRouteGuard />,
