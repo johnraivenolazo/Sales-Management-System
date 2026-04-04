@@ -11,11 +11,22 @@ import { useAuth } from "../hooks/useAuth.js";
 import { consumeAuthRedirectTarget, storeAuthRedirectTarget } from "../lib/authRedirect.js";
 import { fadeUp, scaleIn, staggerContainer } from "../lib/motion.js";
 
+function isPendingActivationMessage(message, guardReason) {
+  if (guardReason === "not_activated") {
+    return true;
+  }
+
+  return String(message ?? "")
+    .toLowerCase()
+    .includes("pending activation");
+}
+
 function RegisterPage() {
   const navigate = useNavigate();
   const {
     authError,
     currentUser,
+    guardReason,
     isAuthLoading,
     isSupabaseConfigured,
     setAuthError,
@@ -33,6 +44,9 @@ function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  const showPendingActivationNotice = successMessage && isPendingActivationMessage(authError, guardReason);
+  const registrationError = showPendingActivationNotice ? "" : authError;
 
   useEffect(() => {
     if (currentUser) {
@@ -113,7 +127,9 @@ function RegisterPage() {
 
     if (data?.user) {
       setSuccessMessage(
-        "Account created. Check your email if confirmation is enabled, then wait for activation by a Sales Manager.",
+        data?.session
+          ? "Account created. Email sign-in is ready, but a Sales Manager still needs to activate your account before protected pages will open."
+          : "Account created. Check your email only if confirmation is enabled, then wait for activation by a Sales Manager.",
       );
     }
 
@@ -299,14 +315,14 @@ function RegisterPage() {
                   </Motion.div>
                 ) : null}
 
-                {authError ? (
+                {registrationError ? (
                   <Motion.div variants={fadeUp}>
                     <Alert
                       className="rounded-2xl border-red-200 bg-red-50 text-red-800"
                       variant="destructive"
                     >
                       <AlertTitle>Registration issue</AlertTitle>
-                      <AlertDescription>{authError}</AlertDescription>
+                      <AlertDescription>{registrationError}</AlertDescription>
                     </Alert>
                   </Motion.div>
                 ) : null}
@@ -316,6 +332,17 @@ function RegisterPage() {
                     <Alert className="rounded-2xl border-emerald-200 bg-emerald-50 text-emerald-900">
                       <AlertTitle>Account created</AlertTitle>
                       <AlertDescription>{successMessage}</AlertDescription>
+                    </Alert>
+                  </Motion.div>
+                ) : null}
+
+                {showPendingActivationNotice ? (
+                  <Motion.div variants={fadeUp}>
+                    <Alert className="rounded-2xl border-amber-200 bg-amber-50 text-amber-950">
+                      <AlertTitle>Activation required</AlertTitle>
+                      <AlertDescription>
+                        Your account stays blocked until a Sales Manager sets it to <strong>ACTIVE</strong>.
+                      </AlertDescription>
                     </Alert>
                   </Motion.div>
                 ) : null}
