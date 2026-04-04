@@ -15,7 +15,7 @@ function DialogFrame({ children, onClose, title, tone = "slate" }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 px-4 py-4 sm:items-center sm:px-6">
       <div
-        className={`w-full max-w-3xl rounded-t-[2rem] border px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6 ${toneClassName}`}
+        className={`max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6 ${toneClassName}`}
       >
         <div className="flex items-start justify-between gap-4">
           <div>

@@ -293,6 +293,20 @@ function SalesDetailPage() {
         </div>
       </section>
 
+      {details.length === 0 ? (
+        <section className="rounded-[2rem] border border-dashed border-slate-900/10 bg-white p-10 text-center shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
+            No line items
+          </p>
+          <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+            This transaction does not have visible line items yet.
+          </h3>
+          <p className="mt-4 text-base leading-7 text-slate-600">
+            Add the first line item to start building the transaction payload, or switch roles if you need broader visibility.
+          </p>
+        </section>
+      ) : null}
+
       <div className="grid gap-4 xl:hidden">
         {details.map((detail) => (
           <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={`${detail.transNo}-${detail.prodCode}`}>

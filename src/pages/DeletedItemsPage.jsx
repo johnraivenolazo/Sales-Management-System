@@ -285,8 +285,18 @@ function DeletedItemsPage() {
       ) : null}
 
       {activeTab === "transactions" ? (
-        <div className="grid gap-4">
-          {workspace.transactions.map((sale) => (
+          <div className="grid gap-4">
+           {workspace.transactions.length === 0 ? (
+             <section className="rounded-[2rem] border border-dashed border-slate-900/10 bg-white p-10 text-center shadow-sm">
+               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
+                 Nothing to recover
+               </p>
+               <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+                 No inactive transactions are waiting right now.
+               </h3>
+             </section>
+           ) : null}
+            {workspace.transactions.map((sale) => (
             <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={sale.transNo}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -339,8 +349,18 @@ function DeletedItemsPage() {
           ))}
         </div>
       ) : (
-        <div className="grid gap-4">
-          {workspace.details.map((detail) => (
+          <div className="grid gap-4">
+           {workspace.details.length === 0 ? (
+             <section className="rounded-[2rem] border border-dashed border-slate-900/10 bg-white p-10 text-center shadow-sm">
+               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
+                 Nothing to recover
+               </p>
+               <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+                 No inactive line items are waiting right now.
+               </h3>
+             </section>
+           ) : null}
+            {workspace.details.map((detail) => (
             <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={`${detail.transNo}-${detail.prodCode}`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
