@@ -1,41 +1,41 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
-
-const navGroups = [
-  {
-    label: "Sales",
-    items: [
-      ["/sales", "Transactions"],
-      ["/sales/TR000001", "Sales Detail"],
-    ],
-  },
-  {
-    label: "Lookups",
-    items: [
-      ["/lookups/customers", "Customers"],
-      ["/lookups/employees", "Employees"],
-      ["/lookups/products", "Products"],
-      ["/lookups/prices", "Prices"],
-    ],
-  },
-  {
-    label: "Workspace",
-    items: [
-      ["/reports", "Reports"],
-      ["/admin", "Admin"],
-      ["/deleted-items", "Deleted Items"],
-      ["/auth/callback", "Auth Callback"],
-    ],
-  },
-];
+import { useRights } from "../hooks/useRights.js";
 
 function ShellPlaceholderLayout() {
   const { currentUser, signOutUser } = useAuth();
+  const { canAccessDeletedItems, userType } = useRights();
   const displayName =
     currentUser?.username ||
     [currentUser?.first_name, currentUser?.last_name].filter(Boolean).join(" ") ||
     currentUser?.email ||
     "Demo User";
+  const navGroups = [
+    {
+      label: "Sales",
+      items: [
+        ["/sales", "Transactions"],
+        ["/sales/TR000001", "Sales Detail"],
+      ],
+    },
+    {
+      label: "Lookups",
+      items: [
+        ["/lookups/customers", "Customers"],
+        ["/lookups/employees", "Employees"],
+        ["/lookups/products", "Products"],
+        ["/lookups/prices", "Prices"],
+      ],
+    },
+    {
+      label: "Workspace",
+      items: [
+        ["/reports", "Reports"],
+        ...(userType === "USER" ? [] : [["/admin", "Admin"]]),
+        ...(canAccessDeletedItems ? [["/deleted-items", "Deleted Items"]] : []),
+      ],
+    },
+  ].filter((group) => group.items.length > 0);
 
   return (
     <div className="min-h-screen bg-[#f7f1e6] text-slate-900">
@@ -69,11 +69,10 @@ function ShellPlaceholderLayout() {
       <div className="mx-auto flex min-h-[calc(100vh-5.5rem)] max-w-7xl flex-col gap-8 px-6 py-8 lg:flex-row">
         <aside className="w-full rounded-[2rem] border border-slate-900/5 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:max-w-xs lg:self-start">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700">
-            App shell
+            Navigation shell
           </p>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Grouped sidebar navigation for Sprint 1 UI shell. Visibility logic
-            stays for later sprint work, but the structure is already in place.
+            Navigation now reflects Sprint 2 visibility rules by keeping Deleted Items and Admin out of the USER view while preserving the grouped SMS layout.
           </p>
 
           <nav className="mt-8 grid gap-6">
