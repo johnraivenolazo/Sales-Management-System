@@ -1,5 +1,6 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import DeletedItemsRouteGuard from "./components/DeletedItemsRouteGuard.jsx";
+import LookupRouteGuard from "./components/LookupRouteGuard.jsx";
 import CustomerLookupPage from "./pages/CustomerLookupPage.jsx";
 import DeletedItemsPage from "./pages/DeletedItemsPage.jsx";
 import EmployeeLookupPage from "./pages/EmployeeLookupPage.jsx";
@@ -47,20 +48,40 @@ export const router = createBrowserRouter([
             element: <SalesDetailPage />,
           },
           {
-            path: "/lookups/customers",
-            element: <CustomerLookupPage />,
+            element: <LookupRouteGuard requiredRight="CUST_LOOKUP" title="customer lookup" />,
+            children: [
+              {
+                path: "/lookups/customers",
+                element: <CustomerLookupPage />,
+              },
+            ],
           },
           {
-            path: "/lookups/employees",
-            element: <EmployeeLookupPage />,
+            element: <LookupRouteGuard requiredRight="EMP_LOOKUP" title="employee lookup" />,
+            children: [
+              {
+                path: "/lookups/employees",
+                element: <EmployeeLookupPage />,
+              },
+            ],
           },
           {
-            path: "/lookups/products",
-            element: <ProductLookupPage />,
+            element: <LookupRouteGuard requiredRight="PROD_LOOKUP" title="product lookup" />,
+            children: [
+              {
+                path: "/lookups/products",
+                element: <ProductLookupPage />,
+              },
+            ],
           },
           {
-            path: "/lookups/prices",
-            element: <PriceHistoryPage />,
+            element: <LookupRouteGuard requiredRight="PRICE_LOOKUP" title="price history" />,
+            children: [
+              {
+                path: "/lookups/prices",
+                element: <PriceHistoryPage />,
+              },
+            ],
           },
           {
             path: "/reports",
