@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import DeletedItemsRouteGuard from "../components/DeletedItemsRouteGuard.jsx";
@@ -76,6 +77,10 @@ function renderDeletedItemsRoute() {
 
   return render(<RouterProvider router={router} />);
 }
+
+const currentFilePath = fileURLToPath(import.meta.url);
+const currentDirectory = path.dirname(currentFilePath);
+const repoRoot = path.resolve(currentDirectory, "..", "..");
 
 function collectFiles(rootDirectory, fileList = []) {
   const entries = fs.readdirSync(rootDirectory, { withFileTypes: true });
@@ -167,7 +172,6 @@ describe("Sprint 2 cascade and visibility coverage", () => {
   });
 
   it("contains no hard-delete statements in service or migration files", () => {
-    const repoRoot = process.cwd();
     const targetFiles = [
       ...collectFiles(path.join(repoRoot, "src", "services")),
       ...collectFiles(path.join(repoRoot, "db", "migrations")),
