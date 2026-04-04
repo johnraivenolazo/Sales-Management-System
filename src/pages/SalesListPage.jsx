@@ -253,6 +253,22 @@ function EmptyState() {
   );
 }
 
+function AccessDeniedState() {
+  return (
+    <section className="rounded-[2rem] border border-amber-900/10 bg-white p-8 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
+        Sales access
+      </p>
+      <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+        Your current rights map does not include Sales viewing access.
+      </h2>
+      <p className="mt-4 text-base leading-7 text-slate-600">
+        Ask a Sales Manager or admin-capable user to grant the correct rights before using the transactions workspace.
+      </p>
+    </section>
+  );
+}
+
 function createEmptyForm(nextTransNo) {
   return {
     transNo: nextTransNo,
@@ -275,13 +291,19 @@ function getNextTransNo(allSales) {
 
 function SalesListPage() {
   const { currentUser } = useAuth();
-  const { hasRight, isRightsLoading } = useRights();
+  const {
+    canCreateSales,
+    canDeleteSales,
+    canEditSales,
+    canSeeStamp,
+    canViewSales,
+    canViewSalesDetail,
+    isAdmin,
+    isRightsLoading,
+    isSuperadmin,
+  } = useRights();
   const userType = String(currentUser?.user_type ?? "").toUpperCase();
-  const canSeeStamp = userType !== "USER";
-  const isPrivilegedUser = userType === "ADMIN" || userType === "SUPERADMIN";
-  const canAddSale = hasRight("SALES_ADD");
-  const canEditSale = hasRight("SALES_EDIT");
-  const canDeleteSale = hasRight("SALES_DEL");
+  const isPrivilegedUser = isAdmin || isSuperadmin;
   const {
     allSales,
     customerOptions,
@@ -316,6 +338,10 @@ function SalesListPage() {
         description="Pulling transactions, lookups, and summary metrics into the sales workspace."
       />
     );
+  }
+
+  if (!isRightsLoading && !canViewSales) {
+    return <AccessDeniedState />;
   }
 
   function openCreateDialog() {
@@ -418,14 +444,14 @@ function SalesListPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 className="inline-flex rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:bg-white/50 disabled:text-slate-500"
-                disabled={!canAddSale || isRightsLoading}
+                disabled={!canCreateSales || isRightsLoading}
                 onClick={openCreateDialog}
                 type="button"
               >
                 Add transaction
               </button>
               <div className="rounded-full border border-white/15 px-4 py-3 text-sm text-white/75">
-                {canAddSale
+                {canCreateSales
                   ? "Create flow is ready for Sales Manager roles."
                   : "Create is hidden by the current rights map."}
               </div>
@@ -465,9 +491,9 @@ function SalesListPage() {
             {sales.map((sale) => (
               <div className="grid gap-3" key={sale.transNo}>
                 <SalesCard canSeeStamp={canSeeStamp} sale={sale} />
-                {(canEditSale || canDeleteSale) ? (
+                {(canEditSales || canDeleteSales || canViewSalesDetail) ? (
                   <div className="flex flex-wrap gap-3">
-                    {canEditSale ? (
+                    {canEditSales ? (
                       <button
                         className="inline-flex rounded-full border border-slate-900/10 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-white"
                         onClick={() => openEditDialog(sale)}
@@ -476,7 +502,7 @@ function SalesListPage() {
                         Edit transaction
                       </button>
                     ) : null}
-                    {canDeleteSale ? (
+                    {canDeleteSales ? (
                       <button
                         className="inline-flex rounded-full border border-rose-900/15 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                         onClick={() => openDeleteDialog(sale)}
@@ -484,6 +510,14 @@ function SalesListPage() {
                       >
                         Soft delete
                       </button>
+                    ) : null}
+                    {canViewSalesDetail ? (
+                      <Link
+                        className="inline-flex rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                        to={`/sales/${sale.transNo}`}
+                      >
+                        Open transaction
+                      </Link>
                     ) : null}
                   </div>
                 ) : null}
@@ -507,10 +541,12 @@ function SalesListPage() {
                     {canSeeStamp ? (
                       <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Stamp</th>
                     ) : null}
-                    {(canEditSale || canDeleteSale) ? (
+                    {(canEditSales || canDeleteSales) ? (
                       <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Manage</th>
                     ) : null}
-                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Open</th>
+                    {canViewSalesDetail ? (
+                      <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Open</th>
+                    ) : null}
                   </tr>
                 </thead>
                 <tbody>
@@ -534,10 +570,10 @@ function SalesListPage() {
                       {canSeeStamp ? (
                         <td className="px-5 py-4 text-sm text-slate-500">{sale.stamp || "N/A"}</td>
                       ) : null}
-                      {(canEditSale || canDeleteSale) ? (
+                      {(canEditSales || canDeleteSales) ? (
                         <td className="px-5 py-4">
                           <div className="flex flex-wrap gap-2">
-                            {canEditSale ? (
+                            {canEditSales ? (
                               <button
                                 className="inline-flex rounded-full border border-slate-900/10 px-3 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50"
                                 onClick={() => openEditDialog(sale)}
@@ -546,7 +582,7 @@ function SalesListPage() {
                                 Edit
                               </button>
                             ) : null}
-                            {canDeleteSale ? (
+                            {canDeleteSales ? (
                               <button
                                 className="inline-flex rounded-full border border-rose-900/15 px-3 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                                 onClick={() => openDeleteDialog(sale)}
@@ -558,14 +594,16 @@ function SalesListPage() {
                           </div>
                         </td>
                       ) : null}
-                      <td className="px-5 py-4">
-                        <Link
-                          className="inline-flex rounded-full border border-slate-900/10 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50"
-                          to={`/sales/${sale.transNo}`}
-                        >
-                          View
-                        </Link>
-                      </td>
+                      {canViewSalesDetail ? (
+                        <td className="px-5 py-4">
+                          <Link
+                            className="inline-flex rounded-full border border-slate-900/10 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50"
+                            to={`/sales/${sale.transNo}`}
+                          >
+                            View
+                          </Link>
+                        </td>
+                      ) : null}
                     </tr>
                   ))}
                 </tbody>
@@ -575,7 +613,7 @@ function SalesListPage() {
         </>
       )}
 
-      {activeDialog === "create" || activeDialog === "edit" ? (
+      {(activeDialog === "create" || activeDialog === "edit") ? (
         <SalesFormDialog
           customerOptions={customerOptions}
           employeeOptions={employeeOptions}
@@ -589,7 +627,7 @@ function SalesListPage() {
         />
       ) : null}
 
-      {activeDialog === "delete" && activeSale ? (
+      {(activeDialog === "delete" && activeSale) ? (
         <ConfirmActionDialog
           description={`Confirm delete transaction ${activeSale.transNo}? This sets the row to INACTIVE so it can be recovered later from Deleted Items.`}
           error={dialogError}
