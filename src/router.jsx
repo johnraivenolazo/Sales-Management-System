@@ -1,11 +1,15 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import DeletedItemsRouteGuard from "./components/DeletedItemsRouteGuard.jsx";
+import CustomerLookupPage from "./pages/CustomerLookupPage.jsx";
+import EmployeeLookupPage from "./pages/EmployeeLookupPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ShellPlaceholderLayout from "./layouts/ShellPlaceholderLayout.jsx";
 import AuthCallbackPage from "./pages/AuthCallbackPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
+import PriceHistoryPage from "./pages/PriceHistoryPage.jsx";
+import ProductLookupPage from "./pages/ProductLookupPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import SalesDetailPage from "./pages/SalesDetailPage.jsx";
 import SalesListPage from "./pages/SalesListPage.jsx";
@@ -43,43 +47,19 @@ export const router = createBrowserRouter([
           },
           {
             path: "/lookups/customers",
-            element: (
-              <PlaceholderPage
-                title="Customer Lookup"
-                routePath="/lookups/customers"
-                summary="Read-only customer lookup page placeholder."
-              />
-            ),
+            element: <CustomerLookupPage />,
           },
           {
             path: "/lookups/employees",
-            element: (
-              <PlaceholderPage
-                title="Employee Lookup"
-                routePath="/lookups/employees"
-                summary="Read-only employee lookup page placeholder."
-              />
-            ),
+            element: <EmployeeLookupPage />,
           },
           {
             path: "/lookups/products",
-            element: (
-              <PlaceholderPage
-                title="Product Lookup"
-                routePath="/lookups/products"
-                summary="Read-only product lookup page placeholder."
-              />
-            ),
+            element: <ProductLookupPage />,
           },
           {
             path: "/lookups/prices",
-            element: (
-              <PlaceholderPage
-                title="Price Lookup"
-                routePath="/lookups/prices"
-                summary="Read-only price history page placeholder."
-              />
-            ),
+            element: <PriceHistoryPage />,
           },
           {
             path: "/reports",
