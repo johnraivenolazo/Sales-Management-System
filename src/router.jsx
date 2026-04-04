@@ -1,12 +1,20 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
+import DeletedItemsRouteGuard from "./components/DeletedItemsRouteGuard.jsx";
+import LookupRouteGuard from "./components/LookupRouteGuard.jsx";
+import CustomerLookupPage from "./pages/CustomerLookupPage.jsx";
+import DeletedItemsPage from "./pages/DeletedItemsPage.jsx";
+import EmployeeLookupPage from "./pages/EmployeeLookupPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ShellPlaceholderLayout from "./layouts/ShellPlaceholderLayout.jsx";
 import AuthCallbackPage from "./pages/AuthCallbackPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
+import PriceHistoryPage from "./pages/PriceHistoryPage.jsx";
+import ProductLookupPage from "./pages/ProductLookupPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
-import SalesDetailPlaceholderPage from "./pages/SalesDetailPlaceholderPage.jsx";
+import SalesDetailPage from "./pages/SalesDetailPage.jsx";
+import SalesListPage from "./pages/SalesListPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -33,57 +41,47 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "/sales",
-            element: (
-              <PlaceholderPage
-                title="Sales"
-                routePath="/sales"
-                summary="Transactions landing page placeholder for the upcoming sales list implementation."
-              />
-            ),
+            element: <SalesListPage />,
           },
           {
             path: "/sales/:transNo",
-            element: <SalesDetailPlaceholderPage />,
+            element: <SalesDetailPage />,
           },
           {
-            path: "/lookups/customers",
-            element: (
-              <PlaceholderPage
-                title="Customer Lookup"
-                routePath="/lookups/customers"
-                summary="Read-only customer lookup page placeholder."
-              />
-            ),
+            element: <LookupRouteGuard requiredRight="CUST_LOOKUP" title="customer lookup" />,
+            children: [
+              {
+                path: "/lookups/customers",
+                element: <CustomerLookupPage />,
+              },
+            ],
           },
           {
-            path: "/lookups/employees",
-            element: (
-              <PlaceholderPage
-                title="Employee Lookup"
-                routePath="/lookups/employees"
-                summary="Read-only employee lookup page placeholder."
-              />
-            ),
+            element: <LookupRouteGuard requiredRight="EMP_LOOKUP" title="employee lookup" />,
+            children: [
+              {
+                path: "/lookups/employees",
+                element: <EmployeeLookupPage />,
+              },
+            ],
           },
           {
-            path: "/lookups/products",
-            element: (
-              <PlaceholderPage
-                title="Product Lookup"
-                routePath="/lookups/products"
-                summary="Read-only product lookup page placeholder."
-              />
-            ),
+            element: <LookupRouteGuard requiredRight="PROD_LOOKUP" title="product lookup" />,
+            children: [
+              {
+                path: "/lookups/products",
+                element: <ProductLookupPage />,
+              },
+            ],
           },
           {
-            path: "/lookups/prices",
-            element: (
-              <PlaceholderPage
-                title="Price Lookup"
-                routePath="/lookups/prices"
-                summary="Read-only price history page placeholder."
-              />
-            ),
+            element: <LookupRouteGuard requiredRight="PRICE_LOOKUP" title="price history" />,
+            children: [
+              {
+                path: "/lookups/prices",
+                element: <PriceHistoryPage />,
+              },
+            ],
           },
           {
             path: "/reports",
@@ -106,14 +104,13 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: "/deleted-items",
-            element: (
-              <PlaceholderPage
-                title="Deleted Items"
-                routePath="/deleted-items"
-                summary="Deleted items placeholder for recovery tooling in Sprint 2."
-              />
-            ),
+            element: <DeletedItemsRouteGuard />,
+            children: [
+              {
+                path: "/deleted-items",
+                element: <DeletedItemsPage />,
+              },
+            ],
           },
         ],
       },
