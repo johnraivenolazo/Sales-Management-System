@@ -1,4 +1,5 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
+import DeletedItemsRouteGuard from "./components/DeletedItemsRouteGuard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ShellPlaceholderLayout from "./layouts/ShellPlaceholderLayout.jsx";
 import AuthCallbackPage from "./pages/AuthCallbackPage.jsx";
@@ -106,14 +107,19 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: "/deleted-items",
-            element: (
-              <PlaceholderPage
-                title="Deleted Items"
-                routePath="/deleted-items"
-                summary="Deleted items placeholder for recovery tooling in Sprint 2."
-              />
-            ),
+            element: <DeletedItemsRouteGuard />,
+            children: [
+              {
+                path: "/deleted-items",
+                element: (
+                  <PlaceholderPage
+                    title="Deleted Items"
+                    routePath="/deleted-items"
+                    summary="Deleted items placeholder for recovery tooling in Sprint 2."
+                  />
+                ),
+              },
+            ],
           },
         ],
       },
