@@ -94,9 +94,9 @@ body {
 }
 
 .workspace-table-scroll {
-  max-height: min(44rem, calc(100dvh - 22rem));
-  overflow: auto;
-  overscroll-behavior: contain;
+  overflow-x: auto;
+  overflow-y: visible;
+  overscroll-behavior-x: contain;
 }
 
 .workspace-table-scroll > table,
@@ -129,12 +129,6 @@ body {
   font-family: var(--font-sidebar);
   font-feature-settings: "ss01" 1, "ss02" 1;
   letter-spacing: 0.002em;
-}
-
-@media (max-width: 1279px) {
-  .workspace-table-scroll {
-    max-height: none;
-  }
 }
 
 @theme inline {

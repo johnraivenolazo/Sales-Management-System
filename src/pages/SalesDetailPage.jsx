@@ -446,10 +446,10 @@ function SalesDetailPage() {
                   <TableCell className="px-4 py-3.5">
                     <div className="flex flex-wrap gap-1.5">
                       {canEditSalesDetail ? (
-                        <button className="inline-flex h-8 rounded-full border border-slate-900/10 px-3 text-xs font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50" onClick={() => openEditDialog(detail)} type="button">Edit</button>
+                        <button className="inline-flex h-8 items-center justify-center rounded-full border border-slate-900/10 px-3 text-xs font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50" onClick={() => openEditDialog(detail)} type="button">Edit</button>
                       ) : null}
                       {canDeleteSalesDetail ? (
-                        <button className="inline-flex h-8 rounded-full border border-rose-900/15 px-3 text-xs font-semibold text-rose-700 transition hover:bg-rose-50" onClick={() => openDeleteDialog(detail)} type="button">Delete</button>
+                        <button className="inline-flex h-8 items-center justify-center rounded-full border border-rose-900/15 px-3 text-xs font-semibold text-rose-700 transition hover:bg-rose-50" onClick={() => openDeleteDialog(detail)} type="button">Delete</button>
                       ) : null}
                     </div>
                   </TableCell>
