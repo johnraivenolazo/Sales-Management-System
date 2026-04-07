@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import { LookupPageShell } from "../features/lookups/LookupPageShell.jsx";
 import {
   formatCurrency,
@@ -226,67 +227,34 @@ function OldTransactionsPage() {
       </div>
 
       <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
-        <div className="app-scrollbar overflow-x-auto">
-          <table className="min-w-full border-collapse text-left text-[13px]">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Transaction
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Sales date
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Customer
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Employee
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Product
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Qty
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Frozen unit price
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Line total
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row) => (
-                <tr
-                  className="border-t border-slate-900/5"
-                  key={`${row.transNo}-${row.prodCode}-${row.salesDate}`}
-                >
-                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">
-                    {row.transNo}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
-                    {formatDisplayDate(row.salesDate)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{row.customerName}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{row.employeeName}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
-                    {row.prodCode} · {row.description}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
-                    {formatQuantity(row.quantity)} {row.unit}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
-                    {formatCurrency(row.unitPrice)}
-                  </td>
-                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">
-                    {formatCurrency(row.lineTotal)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table className="min-w-[64rem] text-left text-[13px]">
+          <TableHeader className="bg-slate-900 text-white">
+            <TableRow>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Transaction</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Sales date</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Customer</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Employee</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Qty</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Frozen unit price</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Line total</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredRows.map((row) => (
+              <TableRow className="border-t border-slate-900/5 odd:bg-white even:bg-slate-50/40" key={`${row.transNo}-${row.prodCode}-${row.salesDate}`}>
+                <TableCell className="px-4 py-3 font-black tracking-tight text-slate-900">{row.transNo}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatDisplayDate(row.salesDate)}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{row.customerName}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{row.employeeName}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{row.prodCode} · {row.description}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatQuantity(row.quantity)} {row.unit}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatCurrency(row.unitPrice)}</TableCell>
+                <TableCell className="px-4 py-3 text-sm font-semibold text-slate-900">{formatCurrency(row.lineTotal)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </LookupPageShell>
   );

@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import { Link, useParams } from "react-router-dom";
 import EmptyStatePanel from "../components/EmptyStatePanel.jsx";
 import PageLoadingState from "../components/PageLoadingState.jsx";
@@ -411,92 +412,52 @@ function SalesDetailPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
-        <div className="app-scrollbar workspace-table-scroll">
-          <table className="min-w-full border-collapse text-left text-[13px]">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Product
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Description
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Quantity
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Unit price
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Row total
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                  Status
-                </th>
+      <section className="hidden overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)] lg:block">
+        <Table className="min-w-[64rem] text-left text-[13px]">
+          <TableHeader className="sticky top-0 z-10 bg-slate-900 text-white">
+            <TableRow className="border-slate-900/5 hover:bg-slate-950">
+              <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Product</TableHead>
+              <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Description</TableHead>
+              <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Quantity</TableHead>
+              <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Unit price</TableHead>
+              <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Row total</TableHead>
+              <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Status</TableHead>
+              {canSeeStamp ? (
+                <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Stamp</TableHead>
+              ) : null}
+              {(canEditSalesDetail || canDeleteSalesDetail) ? (
+                <TableHead className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Manage</TableHead>
+              ) : null}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {details.map((detail) => (
+              <TableRow className="border-t border-slate-900/5 align-top odd:bg-white even:bg-slate-50/40" key={`${detail.transNo}-${detail.prodCode}`}>
+                <TableCell className="px-4 py-3.5 font-black tracking-tight text-slate-900">{detail.prodCode}</TableCell>
+                <TableCell className="px-4 py-3.5 text-sm text-slate-600">{detail.description}</TableCell>
+                <TableCell className="px-4 py-3.5 text-sm text-slate-600">{formatQuantity(detail.quantity)} {detail.unit}</TableCell>
+                <TableCell className="px-4 py-3.5 text-sm text-slate-600">{formatCurrency(detail.unitPrice)}</TableCell>
+                <TableCell className="px-4 py-3.5 text-sm font-semibold text-slate-900">{formatCurrency(detail.rowTotal)}</TableCell>
+                <TableCell className="px-4 py-3.5"><StatusBadge value={detail.record_status} /></TableCell>
                 {canSeeStamp ? (
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                    Stamp
-                  </th>
+                  <TableCell className="px-4 py-3.5 text-sm text-slate-500">{detail.stamp || "N/A"}</TableCell>
                 ) : null}
                 {(canEditSalesDetail || canDeleteSalesDetail) ? (
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                    Manage
-                  </th>
+                  <TableCell className="px-4 py-3.5">
+                    <div className="flex flex-wrap gap-1.5">
+                      {canEditSalesDetail ? (
+                        <button className="inline-flex h-8 rounded-full border border-slate-900/10 px-3 text-xs font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50" onClick={() => openEditDialog(detail)} type="button">Edit</button>
+                      ) : null}
+                      {canDeleteSalesDetail ? (
+                        <button className="inline-flex h-8 rounded-full border border-rose-900/15 px-3 text-xs font-semibold text-rose-700 transition hover:bg-rose-50" onClick={() => openDeleteDialog(detail)} type="button">Delete</button>
+                      ) : null}
+                    </div>
+                  </TableCell>
                 ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {details.map((detail) => (
-                <tr className="border-t border-slate-900/5 align-top" key={`${detail.transNo}-${detail.prodCode}`}>
-                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">
-                    {detail.prodCode}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{detail.description}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
-                    {formatQuantity(detail.quantity)} {detail.unit}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">
-                    {formatCurrency(detail.unitPrice)}
-                  </td>
-                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">
-                    {formatCurrency(detail.rowTotal)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge value={detail.record_status} />
-                  </td>
-                  {canSeeStamp ? (
-                    <td className="px-4 py-3 text-sm text-slate-500">{detail.stamp || "N/A"}</td>
-                  ) : null}
-                  {(canEditSalesDetail || canDeleteSalesDetail) ? (
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-2">
-                        {canEditSalesDetail ? (
-                          <button
-                            className="inline-flex rounded-full border border-slate-900/10 px-3 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900/30 hover:bg-slate-50"
-                            onClick={() => openEditDialog(detail)}
-                            type="button"
-                          >
-                            Edit
-                          </button>
-                        ) : null}
-                        {canDeleteSalesDetail ? (
-                          <button
-                            className="inline-flex rounded-full border border-rose-900/15 px-3 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
-                            onClick={() => openDeleteDialog(detail)}
-                            type="button"
-                          >
-                            Delete
-                          </button>
-                        ) : null}
-                      </div>
-                    </td>
-                  ) : null}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
 
       {activeDialog === "create" || activeDialog === "edit" ? (

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import { LookupPageShell } from "../features/lookups/LookupPageShell.jsx";
 import { getCustomers } from "../services/lookupService.js";
 
@@ -116,28 +117,26 @@ function CustomerLookupPage() {
       </div>
 
       <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
-        <div className="app-scrollbar workspace-table-scroll">
-          <table className="min-w-full border-collapse text-left text-[13px]">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Code</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Customer</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Address</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Pay term</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCustomers.map((customer) => (
-                <tr className="border-t border-slate-900/5" key={customer.custno}>
-                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">{customer.custno}</td>
-                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">{customer.custname}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{customer.address}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{customer.payterm}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table className="min-w-full text-left text-[13px]">
+          <TableHeader className="bg-slate-900 text-white">
+            <TableRow>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Code</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Customer</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Address</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Pay term</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCustomers.map((customer) => (
+              <TableRow className="border-t border-slate-900/5 odd:bg-white even:bg-slate-50/40" key={customer.custno}>
+                <TableCell className="px-4 py-3 font-black tracking-tight text-slate-900">{customer.custno}</TableCell>
+                <TableCell className="px-4 py-3 text-sm font-semibold text-slate-900">{customer.custname}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{customer.address}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{customer.payterm}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </LookupPageShell>
   );

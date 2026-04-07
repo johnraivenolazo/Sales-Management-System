@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/manrope";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -47,6 +48,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --font-sidebar: 'Manrope Variable', 'Geist Variable', sans-serif;
 }
 
 * {
@@ -95,6 +97,38 @@ body {
   max-height: min(44rem, calc(100dvh - 22rem));
   overflow: auto;
   overscroll-behavior: contain;
+}
+
+.workspace-table-scroll > table,
+.app-scrollbar > table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.workspace-table-scroll > table thead tr:first-child th:first-child,
+.app-scrollbar > table thead tr:first-child th:first-child {
+  border-top-left-radius: 1.1rem;
+}
+
+.workspace-table-scroll > table thead tr:first-child th:last-child,
+.app-scrollbar > table thead tr:first-child th:last-child {
+  border-top-right-radius: 1.1rem;
+}
+
+.workspace-table-scroll > table tbody tr:last-child td:first-child,
+.app-scrollbar > table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 1.1rem;
+}
+
+.workspace-table-scroll > table tbody tr:last-child td:last-child,
+.app-scrollbar > table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 1.1rem;
+}
+
+.sidebar-modern {
+  font-family: var(--font-sidebar);
+  font-feature-settings: "ss01" 1, "ss02" 1;
+  letter-spacing: 0.002em;
 }
 
 @media (max-width: 1279px) {

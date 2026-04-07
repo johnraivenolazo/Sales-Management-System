@@ -17,7 +17,7 @@ function ToggleSwitch({ ariaLabel, checked, disabled, onToggle }) {
       aria-checked={checked}
       aria-label={ariaLabel}
       className={cn(
-        "relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border p-1 transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950/15 focus-visible:ring-offset-2",
+        "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border p-0.5 transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950/15 focus-visible:ring-offset-2",
         checked
           ? "border-emerald-500/25 bg-emerald-500 shadow-[inset_0_1px_3px_rgba(15,23,42,0.24)]"
           : "border-slate-900/10 bg-slate-300 shadow-[inset_0_1px_3px_rgba(15,23,42,0.12)]",
@@ -30,8 +30,8 @@ function ToggleSwitch({ ariaLabel, checked, disabled, onToggle }) {
     >
       <span
         className={cn(
-          "size-6 rounded-full bg-white shadow-[0_4px_14px_rgba(15,23,42,0.18)] transition-transform duration-200 ease-out",
-          checked ? "translate-x-6" : "translate-x-0",
+          "size-5 rounded-full bg-white shadow-[0_4px_14px_rgba(15,23,42,0.18)] transition-transform duration-200 ease-out",
+          checked ? "translate-x-5" : "translate-x-0",
         )}
       />
     </button>
@@ -269,7 +269,6 @@ export function UserRightsEditor({ onClose, onSaved, user, viewerUserType }) {
         `RIGHTS ${user.userId} ${new Date().toISOString()}`,
       );
       setSuccessMessage("Permissions saved.");
-      onSaved?.();
     } catch (nextError) {
       setError(nextError.message ?? "Unable to save rights.");
     } finally {
@@ -282,10 +281,36 @@ export function UserRightsEditor({ onClose, onSaved, user, viewerUserType }) {
       return;
     }
 
-    setDraftRights((currentRights) => ({
-      ...currentRights,
-      [rightCode]: !currentRights[rightCode],
-    }));
+    const nextRights = {
+      ...draftRights,
+      [rightCode]: !draftRights[rightCode],
+    };
+    
+    setDraftRights(nextRights);
+    // Auto-save on toggle (silent save, no refresh)
+    autoSaveRights(nextRights);
+  }
+
+  async function autoSaveRights(updatedRights) {
+    if (!user?.userId || isLocked || !canManageTarget) {
+      return;
+    }
+
+    try {
+      await saveUserRights(
+        user.userId,
+        updatedRights,
+        `RIGHTS ${user.userId} ${new Date().toISOString()}`,
+      );
+      setSuccessMessage("Permission updated.");
+      // Clear success message after 2 seconds
+      setTimeout(() => setSuccessMessage(""), 2000);
+      // Don't call onSaved() here - it triggers a full refresh for auto-save
+    } catch (nextError) {
+      setError(nextError.message ?? "Unable to save permission.");
+      // Clear error after 3 seconds
+      setTimeout(() => setError(""), 3000);
+    }
   }
 
   if (!user) {
@@ -328,8 +353,8 @@ export function UserRightsEditor({ onClose, onSaved, user, viewerUserType }) {
   }
 
   return (
-    <Card className="rounded-[2rem] border-slate-900/5 bg-white/95 shadow-sm">
-      <CardContent className="grid gap-5 p-5 sm:p-6">
+    <Card className="rounded-[2rem] border-slate-900/5 bg-white/95 shadow-sm flex flex-col">
+      <CardContent className="flex flex-col gap-5 p-5 sm:p-6 flex-1 overflow-hidden">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <Badge className="rounded-full bg-slate-950 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white hover:bg-slate-950">
@@ -390,7 +415,7 @@ export function UserRightsEditor({ onClose, onSaved, user, viewerUserType }) {
             Loading rights...
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-4 flex-1 overflow-y-auto app-scrollbar">
             {RIGHTS_SECTIONS.map((section) => (
               <section
                 className="rounded-[1.6rem] border border-slate-900/5 bg-slate-50/80 p-4"
@@ -423,25 +448,25 @@ export function UserRightsEditor({ onClose, onSaved, user, viewerUserType }) {
           </div>
         )}
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button
-            className="rounded-full border border-slate-900/10 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-900/20 hover:bg-white"
-            onClick={onClose}
-            type="button"
-            variant="outline"
-          >
-            Close
-          </Button>
-          <Button
-            className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-            disabled={isSaving || isLoading || isLocked || isRoleSaving}
-            onClick={() => void handleSave()}
-            type="button"
-          >
-            {isSaving ? "Saving..." : "Save permissions"}
-          </Button>
-        </div>
       </CardContent>
+      <div className="border-t border-slate-200/50 bg-white p-5 sm:p-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button
+          className="rounded-full border border-slate-900/10 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-900/20 hover:bg-white"
+          onClick={onClose}
+          type="button"
+          variant="outline"
+        >
+          Close
+        </Button>
+        <Button
+          className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          disabled={isLoading || isLocked || isRoleSaving}
+          onClick={() => void handleSave()}
+          type="button"
+        >
+          {isSaving ? "Saving..." : "Save changes"}
+        </Button>
+      </div>
     </Card>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import { LookupPageShell } from "../features/lookups/LookupPageShell.jsx";
 import { formatCurrency, formatDisplayDate } from "../features/sales/salesFormatting.js";
 import { getPriceHistory, getProducts } from "../services/lookupService.js";
@@ -146,28 +147,26 @@ function PriceHistoryPage() {
       </div>
 
       <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
-        <div className="app-scrollbar overflow-x-auto">
-          <table className="min-w-full border-collapse text-left text-[13px]">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Product</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Description</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Effective date</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Unit price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row) => (
-                <tr className="border-t border-slate-900/5" key={`${row.prodCode}-${row.effDate}`}>
-                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">{row.prodCode}</td>
-                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">{row.description}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{formatDisplayDate(row.effDate)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{formatCurrency(row.unitPrice)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table className="min-w-full text-left text-[13px]">
+          <TableHeader className="bg-slate-900 text-white">
+            <TableRow>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Description</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Effective date</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Unit price</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredRows.map((row) => (
+              <TableRow className="border-t border-slate-900/5 odd:bg-white even:bg-slate-50/40" key={`${row.prodCode}-${row.effDate}`}>
+                <TableCell className="px-4 py-3 font-black tracking-tight text-slate-900">{row.prodCode}</TableCell>
+                <TableCell className="px-4 py-3 text-sm font-semibold text-slate-900">{row.description}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatDisplayDate(row.effDate)}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatCurrency(row.unitPrice)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </LookupPageShell>
   );

@@ -21,7 +21,11 @@ function normalizeUserId(userId) {
 
 function cleanStamp(stamp) {
   const nextStamp = stamp?.trim();
-  return nextStamp ? nextStamp : null;
+  if (!nextStamp) {
+    return null;
+  }
+
+  return nextStamp.slice(0, 60);
 }
 
 function normalizeRightCode(rightCode) {

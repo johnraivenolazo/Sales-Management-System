@@ -78,7 +78,7 @@ export function Sidebar({ children, className }) {
             />
             <aside
               className={cn(
-                "absolute inset-y-0 left-0 flex h-dvh max-h-dvh w-[15.5rem] max-w-[84vw] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(252,249,243,0.98)_0%,rgba(245,237,224,0.98)_100%)] text-sidebar-foreground shadow-[inset_-1px_0_0_rgba(148,163,184,0.12),0_28px_80px_rgba(15,23,42,0.18)]",
+                "absolute inset-y-0 left-0 flex h-dvh max-h-dvh w-[16.25rem] max-w-[86vw] flex-col overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.75),transparent_34%),linear-gradient(180deg,rgba(251,247,240,0.99)_0%,rgba(243,235,223,0.98)_100%)] text-sidebar-foreground shadow-[inset_-1px_0_0_rgba(148,163,184,0.12),0_28px_80px_rgba(15,23,42,0.2)]",
                 className,
               )}
             >
@@ -93,7 +93,7 @@ export function Sidebar({ children, className }) {
   return (
     <aside
       className={cn(
-        "hidden h-dvh max-h-dvh w-[15.5rem] shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(252,249,243,0.98)_0%,rgba(245,237,224,0.98)_100%)] text-sidebar-foreground shadow-[inset_-1px_0_0_rgba(148,163,184,0.12)] lg:sticky lg:top-0 lg:flex lg:flex-col",
+        "hidden h-dvh max-h-dvh w-[16.25rem] shrink-0 overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.75),transparent_34%),linear-gradient(180deg,rgba(251,247,240,0.99)_0%,rgba(243,235,223,0.98)_100%)] text-sidebar-foreground shadow-[inset_-1px_0_0_rgba(148,163,184,0.12)] lg:sticky lg:top-0 lg:flex lg:flex-col",
         className,
       )}
     >
@@ -104,7 +104,7 @@ export function Sidebar({ children, className }) {
 
 export function SidebarHeader({ children, className }) {
   return (
-    <div className={cn("px-4 py-4", className)}>
+    <div className={cn("px-3.5 py-3.5", className)}>
       {children}
     </div>
   );
@@ -112,7 +112,7 @@ export function SidebarHeader({ children, className }) {
 
 export function SidebarContent({ children, className }) {
   return (
-    <div className={cn("app-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4", className)}>
+    <div className={cn("app-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-2.5 py-3", className)}>
       {children}
     </div>
   );
@@ -120,21 +120,21 @@ export function SidebarContent({ children, className }) {
 
 export function SidebarFooter({ children, className }) {
   return (
-    <div className={cn("shrink-0 px-4 py-4", className)}>
+    <div className={cn("shrink-0 px-3.5 py-3.5", className)}>
       {children}
     </div>
   );
 }
 
 export function SidebarGroup({ children, className }) {
-  return <section className={cn("mb-6", className)}>{children}</section>;
+  return <section className={cn("mb-5", className)}>{children}</section>;
 }
 
 export function SidebarGroupLabel({ children, className }) {
   return (
     <p
       className={cn(
-        "mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/45",
+        "mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-sidebar-foreground/55",
         className,
       )}
     >
@@ -144,7 +144,7 @@ export function SidebarGroupLabel({ children, className }) {
 }
 
 export function SidebarMenu({ children, className }) {
-  return <div className={cn("grid gap-1.5", className)}>{children}</div>;
+  return <div className={cn("grid gap-2", className)}>{children}</div>;
 }
 
 export function SidebarInset({ children, className }) {
