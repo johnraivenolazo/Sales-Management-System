@@ -96,18 +96,24 @@ function PriceHistoryPage() {
       title="Price history ledger"
     >
       <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
-        <select
-          className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-          onChange={(event) => setProductFilter(event.target.value)}
-          value={productFilter}
-        >
-          <option value="ALL">All products</option>
-          {productOptions.map((product) => (
-            <option key={product.value} value={product.value}>
-              {product.label}
-            </option>
-          ))}
-        </select>
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Filter by product
+          </span>
+          <select
+            aria-label="Filter price history by product"
+            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+            onChange={(event) => setProductFilter(event.target.value)}
+            value={productFilter}
+          >
+            <option value="ALL">All products</option>
+            {productOptions.map((product) => (
+              <option key={product.value} value={product.value}>
+                {product.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </section>
 
       {error ? (
@@ -116,7 +122,7 @@ function PriceHistoryPage() {
         </section>
       ) : null}
 
-      <div className="grid gap-4 xl:hidden">
+      <div className="grid gap-4 lg:hidden">
         {filteredRows.map((row) => (
           <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={`${row.prodCode}-${row.effDate}`}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
@@ -139,7 +145,7 @@ function PriceHistoryPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
         <div className="app-scrollbar overflow-x-auto">
           <table className="min-w-full border-collapse text-left text-[13px]">
             <thead className="bg-slate-900 text-white">

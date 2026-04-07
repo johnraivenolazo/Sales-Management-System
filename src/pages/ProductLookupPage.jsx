@@ -96,13 +96,19 @@ function ProductLookupPage() {
       title="Product and current-price directory"
     >
       <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
-        <input
-          className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search product code or description"
-          type="search"
-          value={query}
-        />
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Search products
+          </span>
+          <input
+            aria-label="Search products"
+            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search product code or description"
+            type="search"
+            value={query}
+          />
+        </label>
       </section>
 
       {error ? (
@@ -111,7 +117,7 @@ function ProductLookupPage() {
         </section>
       ) : null}
 
-      <div className="grid gap-4 xl:hidden">
+      <div className="grid gap-4 lg:hidden">
         {filteredProducts.map((product) => (
           <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={product.prodCode}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
@@ -132,7 +138,7 @@ function ProductLookupPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm lg:block">
         <div className="app-scrollbar overflow-x-auto">
           <table className="min-w-full border-collapse text-left">
             <thead className="bg-slate-900 text-white">

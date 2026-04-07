@@ -5,6 +5,7 @@ import {
   formatDisplayDate,
   formatQuantity,
 } from "../features/sales/salesFormatting.js";
+import EmptyStatePanel from "../components/EmptyStatePanel.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { getCustomers, getEmployees, getProducts } from "../services/lookupService.js";
 import { recoverDetailLine } from "../services/salesDetailService.js";
@@ -273,14 +274,11 @@ function DeletedItemsPage() {
       {activeTab === "transactions" ? (
           <div className="grid gap-4">
            {workspace.transactions.length === 0 ? (
-             <section className="rounded-[2rem] border border-dashed border-slate-900/10 bg-white p-10 text-center shadow-sm">
-               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
-                 Nothing to recover
-               </p>
-               <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
-                 No inactive transactions are waiting right now.
-               </h3>
-             </section>
+             <EmptyStatePanel
+               eyebrow="No matching records"
+               title="No inactive transactions are available for recovery."
+               description="Recovered and active transactions are hidden from this view."
+             />
            ) : null}
             {workspace.transactions.map((sale) => (
             <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={sale.transNo}>
@@ -337,14 +335,11 @@ function DeletedItemsPage() {
       ) : (
           <div className="grid gap-4">
            {workspace.details.length === 0 ? (
-             <section className="rounded-[2rem] border border-dashed border-slate-900/10 bg-white p-10 text-center shadow-sm">
-               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
-                 Nothing to recover
-               </p>
-               <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
-                 No inactive line items are waiting right now.
-               </h3>
-             </section>
+             <EmptyStatePanel
+               eyebrow="No matching records"
+               title="No inactive line items are available for recovery."
+               description="Recovered and active line items are hidden from this view."
+             />
            ) : null}
             {workspace.details.map((detail) => (
             <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={`${detail.transNo}-${detail.prodCode}`}>

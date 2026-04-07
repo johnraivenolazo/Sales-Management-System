@@ -125,25 +125,43 @@ function OldTransactionsPage() {
     >
       <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
         <div className="grid gap-3 lg:grid-cols-[1.3fr_0.85fr_0.85fr]">
-          <input
-            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search transaction, product, customer, employee"
-            type="search"
-            value={query}
-          />
-          <input
-            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-            onChange={(event) => setStartDate(event.target.value)}
-            type="date"
-            value={startDate}
-          />
-          <input
-            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-            onChange={(event) => setEndDate(event.target.value)}
-            type="date"
-            value={endDate}
-          />
+          <label className="grid gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Search ledger
+            </span>
+            <input
+              aria-label="Search old transactions"
+              className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search transaction, product, customer, employee"
+              type="search"
+              value={query}
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Start date
+            </span>
+            <input
+              aria-label="Old transactions start date"
+              className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+              onChange={(event) => setStartDate(event.target.value)}
+              type="date"
+              value={startDate}
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              End date
+            </span>
+            <input
+              aria-label="Old transactions end date"
+              className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+              onChange={(event) => setEndDate(event.target.value)}
+              type="date"
+              value={endDate}
+            />
+          </label>
         </div>
       </section>
 
@@ -153,7 +171,7 @@ function OldTransactionsPage() {
         </section>
       ) : null}
 
-      <div className="grid gap-4 xl:hidden">
+      <div className="grid gap-4 lg:hidden">
         {filteredRows.map((row) => (
           <article
             className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm"
@@ -207,7 +225,7 @@ function OldTransactionsPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
         <div className="app-scrollbar overflow-x-auto">
           <table className="min-w-full border-collapse text-left text-[13px]">
             <thead className="bg-slate-900 text-white">

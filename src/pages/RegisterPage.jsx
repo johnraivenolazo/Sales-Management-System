@@ -46,6 +46,60 @@ function RegisterPage() {
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+  }
+
+  function validateField(name, value) {
+    if (name === "firstName") {
+      return value.trim() ? "" : "First name is required.";
+    }
+
+    if (name === "lastName") {
+      return value.trim() ? "" : "Last name is required.";
+    }
+
+    if (name === "username") {
+      const username = value.trim();
+      if (!username) {
+        return "Username is required.";
+      }
+
+      if (username.length < 4) {
+        return "Username must be at least 4 characters.";
+      }
+
+      return "";
+    }
+
+    if (name === "email") {
+      const email = value.trim();
+      if (!email) {
+        return "Email is required.";
+      }
+
+      if (!isValidEmail(email)) {
+        return "Enter a valid email address.";
+      }
+
+      return "";
+    }
+
+    if (name === "password") {
+      if (!value.trim()) {
+        return "Password is required.";
+      }
+
+      if (value.length < 8) {
+        return "Password must be at least 8 characters.";
+      }
+
+      return "";
+    }
+
+    return "";
+  }
+
   const showPendingActivationNotice = successMessage && isPendingActivationMessage(authError, guardReason);
   const registrationError = showPendingActivationNotice ? "" : authError;
 
@@ -58,9 +112,15 @@ function RegisterPage() {
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: "" }));
-    setSuccessMessage("");
-    setAuthError("");
+    setErrors((current) => ({ ...current, [name]: validateField(name, value) }));
+
+    if (successMessage) {
+      setSuccessMessage("");
+    }
+
+    if (authError && (name === "email" || name === "username" || name === "password")) {
+      setAuthError("");
+    }
   }
 
   function validate() {
@@ -82,7 +142,7 @@ function RegisterPage() {
 
     if (!formData.email.trim()) {
       nextErrors.email = "Email is required.";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+    } else if (!isValidEmail(formData.email.trim())) {
       nextErrors.email = "Enter a valid email address.";
     }
 

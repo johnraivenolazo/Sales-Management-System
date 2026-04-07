@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import EmptyStatePanel from "../components/EmptyStatePanel.jsx";
 import PageLoadingState from "../components/PageLoadingState.jsx";
 import { ConfirmActionDialog, SalesFormDialog } from "../features/sales/SalesFormDialog.jsx";
 import { useAuth } from "../hooks/useAuth.js";
@@ -56,6 +57,7 @@ function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }
             Search
           </span>
           <input
+            aria-label="Search transactions"
             className="rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
             onChange={(event) =>
               setFilters((currentFilters) => ({
@@ -97,6 +99,7 @@ function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }
             Start date
           </span>
           <input
+            aria-label="Transactions start date"
             className="rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
             onChange={(event) =>
               setFilters((currentFilters) => ({
@@ -114,6 +117,7 @@ function SalesFilters({ customerOptions, filters, isPrivilegedUser, setFilters }
             End date
           </span>
           <input
+            aria-label="Transactions end date"
             className="rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
             onChange={(event) =>
               setFilters((currentFilters) => ({
@@ -240,17 +244,11 @@ function SalesCard({ canSeeStamp, sale }) {
 
 function EmptyState() {
   return (
-    <section className="rounded-[2rem] border border-dashed border-slate-900/10 bg-white p-10 text-center shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
-        No matches
-      </p>
-      <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
-        No transactions matched the current filters.
-      </h2>
-      <p className="mt-4 text-base leading-7 text-slate-600">
-        Adjust the customer, date range, or search query to widen the visible transaction set.
-      </p>
-    </section>
+    <EmptyStatePanel
+      eyebrow="No matching records"
+      title="No transactions matched the current filters."
+      description="Adjust customer, date range, or search terms to widen the visible result set."
+    />
   );
 }
 
@@ -484,7 +482,7 @@ function SalesListPage() {
         <EmptyState />
       ) : (
         <>
-          <div className="grid gap-4 xl:hidden">
+          <div className="grid gap-4 lg:hidden">
             {sales.map((sale) => (
               <div className="grid gap-3" key={sale.transNo}>
                 <SalesCard canSeeStamp={canSeeStamp} sale={sale} />
@@ -522,7 +520,7 @@ function SalesListPage() {
             ))}
           </div>
 
-          <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
+          <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
             <div className="app-scrollbar workspace-table-scroll">
               <table className="min-w-full border-collapse text-left text-[13px]">
                 <thead className="bg-slate-900 text-white">

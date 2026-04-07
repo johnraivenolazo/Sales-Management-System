@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table.jsx";
 import { fadeUp, scaleIn, staggerContainer } from "@/lib/motion.js";
+import EmptyStatePanel from "../components/EmptyStatePanel.jsx";
 import PageLoadingState from "../components/PageLoadingState.jsx";
 import { useRights } from "../hooks/useRights.js";
 import { activateUser, deactivateUser, getUsers } from "../services/adminService.js";
@@ -97,19 +98,11 @@ function AccessDeniedState() {
 
 function EmptyState() {
   return (
-    <Card className="rounded-[2rem] border-dashed border-slate-900/10 bg-white/94 shadow-sm">
-      <CardContent className="p-10 text-center">
-        <Badge className="rounded-full bg-amber-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-amber-900 hover:bg-amber-100">
-          No users found
-        </Badge>
-        <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
-          No accounts matched the current filters.
-        </h3>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600">
-          Change the search query, status, or role filter to widen the visible admin user set.
-        </p>
-      </CardContent>
-    </Card>
+    <EmptyStatePanel
+      eyebrow="No matching records"
+      title="No accounts matched the current filters."
+      description="Change search query, role, or status filters to widen the visible result set."
+    />
   );
 }
 
@@ -313,6 +306,7 @@ function AdminUsersPage() {
                 Search
               </span>
               <Input
+                aria-label="Search users"
                 className="h-11 rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Name, email, or user ID"
@@ -368,7 +362,7 @@ function AdminUsersPage() {
         <EmptyState />
       ) : (
         <>
-          <div className="grid gap-4 xl:hidden">
+          <div className="grid gap-4 lg:hidden">
             {filteredUsers.map((user) => {
               const isSuperadmin = user.userType === "SUPERADMIN";
               const isActive = user.recordStatus === "ACTIVE";
@@ -451,8 +445,8 @@ function AdminUsersPage() {
             })}
           </div>
 
-          <Motion.section className="hidden min-h-0 min-w-0 xl:block" variants={fadeUp}>
-            <Card className="flex min-h-[24rem] min-w-0 overflow-hidden rounded-[2rem] border-white/80 bg-white/95 shadow-sm xl:h-full">
+          <Motion.section className="hidden min-h-0 min-w-0 lg:block" variants={fadeUp}>
+            <Card className="flex min-h-[24rem] min-w-0 overflow-hidden rounded-[2rem] border-white/80 bg-white/95 shadow-sm lg:h-full">
               <CardContent className="flex min-h-0 flex-1 p-0">
                 <div className="app-scrollbar workspace-table-scroll min-h-0 min-w-0 flex-1">
                   <Table className="table-fixed [&_td]:break-words [&_td]:whitespace-normal [&_th]:whitespace-normal">

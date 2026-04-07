@@ -4,7 +4,6 @@ import {
   BarChart3,
   Building2,
   ChevronDown,
-  ChevronRight,
   CircleDollarSign,
   FileStack,
   LogOut,
@@ -139,6 +138,8 @@ function ShellFrame() {
   const [collapsedGroups, setCollapsedGroups] = useState({});
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef(null);
+  const accountMenuButtonRef = useRef(null);
+  const accountLogoutButtonRef = useRef(null);
 
   const navGroups = [
     {
@@ -176,7 +177,21 @@ function ShellFrame() {
   }
 
   useEffect(() => {
+    if (!isAccountMenuOpen) {
+      return;
+    }
+
+    accountLogoutButtonRef.current?.focus();
+  }, [isAccountMenuOpen]);
+
+  useEffect(() => {
     function handlePointerDown(event) {
+      if (!accountMenuRef.current?.contains(event.target)) {
+        setIsAccountMenuOpen(false);
+      }
+    }
+
+    function handleFocusIn(event) {
       if (!accountMenuRef.current?.contains(event.target)) {
         setIsAccountMenuOpen(false);
       }
@@ -185,20 +200,36 @@ function ShellFrame() {
     function handleEscape(event) {
       if (event.key === "Escape") {
         setIsAccountMenuOpen(false);
+        accountMenuButtonRef.current?.focus();
       }
     }
 
     window.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("focusin", handleFocusIn);
     window.addEventListener("keydown", handleEscape);
 
     return () => {
       window.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("focusin", handleFocusIn);
       window.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
+  function handleAccountMenuButtonKeyDown(event) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setIsAccountMenuOpen(true);
+    }
+  }
+
   return (
     <div className="h-dvh overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.92),transparent_24%),linear-gradient(180deg,#f8f2e8_0%,#efe5d4_100%)] text-slate-900">
+      <a
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-xl focus:bg-slate-950 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+        href="#main-content"
+      >
+        Skip to main content
+      </a>
       <div className="flex h-full min-h-0 items-stretch">
         <Sidebar className="backdrop-blur-xl">
           <SidebarHeader className="bg-transparent">
@@ -277,12 +308,6 @@ function ShellFrame() {
                         <span className={cn("flex-1", isActive ? "text-white" : "text-slate-950")}>
                           {label}
                         </span>
-                        <ChevronRight
-                          className={cn(
-                            "size-4 transition",
-                            isActive ? "text-white/60" : "text-slate-300 group-hover:text-slate-500",
-                          )}
-                        />
                       </NavLink>
                     );
                   })}
@@ -339,9 +364,13 @@ function ShellFrame() {
                 ref={accountMenuRef}
               >
                 <button
+                  aria-controls="account-menu"
                   aria-expanded={isAccountMenuOpen}
+                  aria-haspopup="menu"
                   className="flex w-full max-w-full items-center justify-between gap-3 rounded-full border border-slate-200 bg-white py-1.5 pl-1.5 pr-2 shadow-sm transition hover:border-slate-300"
+                  onKeyDown={handleAccountMenuButtonKeyDown}
                   onClick={() => setIsAccountMenuOpen((current) => !current)}
+                  ref={accountMenuButtonRef}
                   type="button"
                 >
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
@@ -365,9 +394,11 @@ function ShellFrame() {
 
                 {isAccountMenuOpen ? (
                   <Motion.div
+                    id="account-menu"
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     className="absolute right-0 top-[calc(100%+0.65rem)] z-50 w-[min(19rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white p-3 shadow-[0_24px_60px_rgba(15,23,42,0.18)] ring-1 ring-slate-950/5"
                     initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                    role="menu"
                     transition={{ duration: 0.18, ease: "easeOut" }}
                   >
                     <div className="flex items-start gap-3 rounded-[1.2rem] bg-slate-50 px-3 py-3">
@@ -393,6 +424,8 @@ function ShellFrame() {
                     <Button
                       className="mt-3 w-full justify-center rounded-xl bg-slate-950 text-white hover:bg-slate-800"
                       onClick={() => void signOutUser()}
+                      ref={accountLogoutButtonRef}
+                      role="menuitem"
                       type="button"
                     >
                       <LogOut className="mr-2 size-4" />
@@ -404,7 +437,7 @@ function ShellFrame() {
             </div>
           </Motion.header>
 
-          <main className="app-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
+          <main className="app-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain" id="main-content" tabIndex={-1}>
             <div className="mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6">
               <Outlet />
             </div>
