@@ -3,6 +3,9 @@ import {
   activateUser,
   deactivateUser,
   getUsers,
+  getUserRights,
+  saveUserRights,
+  saveUserRole,
 } from "../services/adminService.js";
 
 const mockSupabaseState = vi.hoisted(() => ({
@@ -160,6 +163,198 @@ describe("Sprint 3 M1 admin service", () => {
       userId: "user3",
       recordStatus: "INACTIVE",
       stamp: "DEACTIVATED",
+    });
+  });
+
+  it("loads the current rights rows for a selected user", async () => {
+    const userMaybeSingle = vi.fn(() =>
+      Promise.resolve({
+        data: {
+          userId: "user3",
+          userType: "USER",
+        },
+        error: null,
+      }),
+    );
+    const rightsOrder = vi.fn(() =>
+      Promise.resolve({
+        data: [
+          {
+            rightCode: "SALES_VIEW",
+            rightValue: 1,
+          },
+        ],
+        error: null,
+      }),
+    );
+    const userEq = vi.fn(() => ({
+      maybeSingle: userMaybeSingle,
+    }));
+    const rightsEq = vi.fn(() => ({
+      order: rightsOrder,
+    }));
+    const select = vi
+      .fn()
+      .mockReturnValueOnce({
+        eq: userEq,
+      })
+      .mockReturnValueOnce({
+        eq: rightsEq,
+      });
+
+    mockSupabaseState.supabase = {
+      from: vi.fn(() => ({
+        select,
+      })),
+    };
+
+    const result = await getUserRights("user3");
+
+    expect(result).toEqual([
+      {
+        rightCode: "SALES_VIEW",
+        rightValue: 1,
+      },
+    ]);
+    expect(mockSupabaseState.supabase.from).toHaveBeenNthCalledWith(1, "user");
+    expect(mockSupabaseState.supabase.from).toHaveBeenNthCalledWith(2, "user_module_rights");
+  });
+
+  it("bulk-saves rights for a normal user and returns the updated rights rows", async () => {
+    const userMaybeSingle = vi.fn(() =>
+      Promise.resolve({
+        data: {
+          userId: "user3",
+          userType: "USER",
+        },
+        error: null,
+      }),
+    );
+    const userEq = vi.fn(() => ({
+      maybeSingle: userMaybeSingle,
+    }));
+    const upsertSelect = vi.fn(() =>
+      Promise.resolve({
+        data: [
+          {
+            rightCode: "SALES_ADD",
+            rightValue: 1,
+          },
+        ],
+        error: null,
+      }),
+    );
+    const upsert = vi.fn(() => ({
+      select: upsertSelect,
+    }));
+    const select = vi.fn(() => ({
+      eq: userEq,
+    }));
+
+    mockSupabaseState.supabase = {
+      from: vi
+        .fn()
+        .mockReturnValueOnce({
+          select,
+        })
+        .mockReturnValueOnce({
+          upsert,
+        }),
+    };
+
+    const result = await saveUserRights(
+      "user3",
+      {
+        SALES_ADD: true,
+        SALES_EDIT: false,
+      },
+      "RIGHTS SAVE",
+    );
+
+    expect(upsert).toHaveBeenCalledWith(
+      [
+        {
+          userid: "user3",
+          right_code: "SALES_ADD",
+          right_value: 1,
+          record_status: "ACTIVE",
+          stamp: "RIGHTS SAVE",
+        },
+        {
+          userid: "user3",
+          right_code: "SALES_EDIT",
+          right_value: 0,
+          record_status: "ACTIVE",
+          stamp: "RIGHTS SAVE",
+        },
+      ],
+      { onConflict: "userid,right_code" },
+    );
+    expect(result).toEqual([
+      {
+        rightCode: "SALES_ADD",
+        rightValue: 1,
+      },
+    ]);
+  });
+
+  it("updates a normal user's role when requested by superadmin tooling", async () => {
+    const userMaybeSingle = vi.fn(() =>
+      Promise.resolve({
+        data: {
+          userId: "user3",
+          userType: "USER",
+        },
+        error: null,
+      }),
+    );
+    const userEq = vi.fn(() => ({
+      maybeSingle: userMaybeSingle,
+    }));
+    const updateSingle = vi.fn(() =>
+      Promise.resolve({
+        data: {
+          userId: "user3",
+          userType: "ADMIN",
+          stamp: "ROLE SAVE",
+        },
+        error: null,
+      }),
+    );
+    const updateEq = vi.fn(() => ({
+      select: vi.fn(() => ({
+        single: updateSingle,
+      })),
+    }));
+    const update = vi.fn(() => ({
+      eq: updateEq,
+    }));
+    const select = vi.fn(() => ({
+      eq: userEq,
+    }));
+
+    mockSupabaseState.supabase = {
+      from: vi
+        .fn()
+        .mockReturnValueOnce({
+          select,
+        })
+        .mockReturnValueOnce({
+          update,
+        }),
+    };
+
+    const result = await saveUserRole("user3", "ADMIN", "ROLE SAVE");
+
+    expect(update).toHaveBeenCalledWith({
+      user_type: "ADMIN",
+      stamp: "ROLE SAVE",
+    });
+    expect(updateEq).toHaveBeenCalledWith("userid", "user3");
+    expect(result).toEqual({
+      userId: "user3",
+      userType: "ADMIN",
+      stamp: "ROLE SAVE",
     });
   });
 });

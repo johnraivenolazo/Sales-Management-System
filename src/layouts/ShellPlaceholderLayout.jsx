@@ -39,6 +39,10 @@ import { useRights } from "../hooks/useRights.js";
 import { fadeUp } from "../lib/motion.js";
 
 function getWorkspaceTitle(pathname) {
+  if (pathname.startsWith("/sales/history")) {
+    return "Old Transactions";
+  }
+
   if (pathname.startsWith("/sales/")) {
     return "Sales Detail";
   }
@@ -84,7 +88,7 @@ function matchesRoute(pathname, to, mode = "exact") {
   }
 
   if (mode === "sales-detail") {
-    return pathname.startsWith("/sales/");
+    return pathname.startsWith("/sales/TR");
   }
 
   return pathname === to;
@@ -141,6 +145,7 @@ function ShellFrame() {
       label: "Sales",
       items: [
         ...(canViewSales ? [[ReceiptText, "/sales", "Transactions", "exact"]] : []),
+        ...(canViewSales ? [[FileStack, "/sales/history", "Old Transactions", "exact"]] : []),
         ...(canViewSalesDetail ? [[FileStack, "/sales/TR000001", "Sales Detail", "sales-detail"]] : []),
       ],
     },
@@ -197,10 +202,22 @@ function ShellFrame() {
       <div className="flex h-full min-h-0 items-stretch">
         <Sidebar className="backdrop-blur-xl">
           <SidebarHeader className="bg-transparent">
-            <BrandMark
-              className="rounded-[1.3rem] bg-white/60 px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_10px_26px_rgba(15,23,42,0.05)]"
-              imageClassName="h-8 w-8 rounded-[0.8rem]"
-            />
+            <div className="rounded-[1.45rem] border border-white/55 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(248,243,234,0.9))] p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_14px_34px_rgba(15,23,42,0.07)]">
+              <div className="flex items-center gap-2.5">
+                <BrandMark
+                  className="items-center gap-0"
+                  frame={false}
+                  imageClassName="h-16 w-16 rounded-[1.1rem] object-contain"
+                  showText={false}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[9px] font-black uppercase tracking-[0.32em] text-[#c46823]">
+                    Hope, Inc.
+                  </p>
+                  <div className="mt-1.5 h-px w-9 rounded-full bg-gradient-to-r from-[#c46823] to-transparent" />
+                </div>
+              </div>
+            </div>
           </SidebarHeader>
 
           <SidebarContent>

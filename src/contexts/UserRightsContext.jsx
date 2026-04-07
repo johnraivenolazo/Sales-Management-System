@@ -107,7 +107,7 @@ export function UserRightsProvider({ children }) {
       canViewEmployeeLookup: hasEnabledRight(rights, "EMP_LOOKUP"),
       canViewProductLookup: hasEnabledRight(rights, "PROD_LOOKUP"),
       canViewPriceLookup: hasEnabledRight(rights, "PRICE_LOOKUP"),
-      canAccessDeletedItems: isAdmin || isSuperadmin,
+      canAccessDeletedItems: hasEnabledRight(rights, "DELETED_VIEW"),
       canSeeStamp: !isUser,
     }),
     [isAdmin, isAuthLoading, isRightsLoading, isSuperadmin, isUser, rights, rightsError, userType],

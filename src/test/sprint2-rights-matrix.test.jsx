@@ -3,6 +3,7 @@ import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { UserRightsProvider } from "../contexts/UserRightsContext.jsx";
 import { useRights } from "../hooks/useRights.js";
+import { canManageUserRole } from "../features/admin/userRightsConfig.js";
 
 const RIGHT_CODES = [
   "SALES_VIEW",
@@ -17,6 +18,7 @@ const RIGHT_CODES = [
   "EMP_LOOKUP",
   "PROD_LOOKUP",
   "PRICE_LOOKUP",
+  "DELETED_VIEW",
   "ADM_USER",
 ];
 
@@ -35,6 +37,7 @@ const ROLE_DEFAULTS = {
     EMP_LOOKUP: true,
     PROD_LOOKUP: true,
     PRICE_LOOKUP: true,
+    DELETED_VIEW: true,
     ADM_USER: true,
   },
   USER: {
@@ -50,6 +53,7 @@ const ROLE_DEFAULTS = {
     EMP_LOOKUP: true,
     PROD_LOOKUP: true,
     PRICE_LOOKUP: true,
+    DELETED_VIEW: false,
     ADM_USER: false,
   },
 };
@@ -211,15 +215,17 @@ describe("Sprint 2 rights matrix", () => {
     expect(screen.getByTestId("can-see-stamp")).toHaveTextContent("true");
   });
 
-  it("limits Deleted Items to admin-capable roles and keeps SUPERADMIN admin access available", async () => {
-    renderRightsMatrix("USER", "SALES_VIEW");
+  it("requires DELETED_VIEW before exposing deleted items access and keeps SUPERADMIN admin access available", async () => {
+    renderRightsProbe("ADMIN", {
+      ...ROLE_DEFAULTS.ADMIN,
+      DELETED_VIEW: false,
+    }, "DELETED_VIEW");
 
     await waitFor(() => {
       expect(screen.getByTestId("rights-loading")).toHaveTextContent("false");
     });
 
     expect(screen.getByTestId("can-access-deleted-items")).toHaveTextContent("false");
-    expect(screen.getByTestId("can-access-admin")).toHaveTextContent("false");
 
     cleanup();
 
@@ -255,5 +261,13 @@ describe("Sprint 2 rights matrix", () => {
     });
 
     expect(screen.getByTestId("can-access-admin")).toHaveTextContent("true");
+  });
+
+  it("only allows SUPERADMIN to manage USER and ADMIN roles", () => {
+    expect(canManageUserRole("SUPERADMIN", "USER")).toBe(true);
+    expect(canManageUserRole("SUPERADMIN", "ADMIN")).toBe(true);
+    expect(canManageUserRole("SUPERADMIN", "SUPERADMIN")).toBe(false);
+    expect(canManageUserRole("ADMIN", "USER")).toBe(false);
+    expect(canManageUserRole("USER", "ADMIN")).toBe(false);
   });
 });

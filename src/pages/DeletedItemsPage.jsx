@@ -6,7 +6,7 @@ import {
   formatQuantity,
 } from "../features/sales/salesFormatting.js";
 import { useAuth } from "../hooks/useAuth.js";
-import { getCustomers, getEmployees, getPriceHistory, getProducts } from "../services/lookupService.js";
+import { getCustomers, getEmployees, getProducts } from "../services/lookupService.js";
 import { recoverDetailLine } from "../services/salesDetailService.js";
 import { getSales, recoverSale } from "../services/salesService.js";
 import { supabase } from "../lib/supabaseClient.js";
@@ -42,16 +42,6 @@ function buildLookupMap(rows, keyName) {
   }, {});
 }
 
-function buildLatestPriceMap(priceHistoryRows) {
-  return (priceHistoryRows ?? []).reduce((priceMap, row) => {
-    if (!priceMap[row.prodCode]) {
-      priceMap[row.prodCode] = Number(row.unitPrice ?? 0);
-    }
-
-    return priceMap;
-  }, {});
-}
-
 async function getInactiveDetailRows() {
   if (!supabase) {
     return [];
@@ -59,7 +49,7 @@ async function getInactiveDetailRows() {
 
   const { data, error } = await supabase
     .from("salesdetail")
-    .select("transNo:transno, prodCode:prodcode, quantity, record_status, stamp")
+    .select("transNo:transno, prodCode:prodcode, quantity, unitPrice:unitprice_snapshot, record_status, stamp")
     .eq("record_status", "INACTIVE")
     .order("transno", { ascending: false })
     .order("prodcode", { ascending: true });
@@ -90,14 +80,13 @@ function DeletedItemsPage() {
 
     async function loadDeletedItems() {
       try {
-        const [salesRows, detailRows, customerRows, employeeRows, productRows, priceRows] =
+        const [salesRows, detailRows, customerRows, employeeRows, productRows] =
           await Promise.all([
             getSales(userType),
             getInactiveDetailRows(),
             getCustomers(),
             getEmployees(),
             getProducts(),
-            getPriceHistory(),
           ]);
 
         if (!active) {
@@ -107,7 +96,6 @@ function DeletedItemsPage() {
         const customerMap = buildLookupMap(customerRows, "custno");
         const employeeMap = buildLookupMap(employeeRows, "empno");
         const productMap = buildLookupMap(productRows, "prodCode");
-        const latestPriceMap = buildLatestPriceMap(priceRows);
 
         setWorkspace({
           transactions: salesRows
@@ -124,10 +112,8 @@ function DeletedItemsPage() {
             ...detail,
             description: productMap[detail.prodCode]?.description ?? "Unknown product",
             unit: productMap[detail.prodCode]?.unit ?? "N/A",
-            unitPrice: Number(latestPriceMap[detail.prodCode] ?? 0),
-            rowTotal:
-              Number(detail.quantity ?? 0) *
-              Number(latestPriceMap[detail.prodCode] ?? 0),
+            unitPrice: Number(detail.unitPrice ?? 0),
+            rowTotal: Number(detail.quantity ?? 0) * Number(detail.unitPrice ?? 0),
           })),
           isLoading: false,
           error: "",

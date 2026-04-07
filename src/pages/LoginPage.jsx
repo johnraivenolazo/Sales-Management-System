@@ -290,7 +290,6 @@ function LoginPage() {
                 {successMessage ? (
                   <Motion.div variants={fadeUp}>
                     <Alert className="rounded-2xl border-emerald-200 bg-emerald-50 text-emerald-900">
-                      <AlertTitle>Status update</AlertTitle>
                       <AlertDescription>{successMessage}</AlertDescription>
                     </Alert>
                   </Motion.div>

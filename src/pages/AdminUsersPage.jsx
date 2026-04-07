@@ -17,6 +17,8 @@ import { fadeUp, scaleIn, staggerContainer } from "@/lib/motion.js";
 import PageLoadingState from "../components/PageLoadingState.jsx";
 import { useRights } from "../hooks/useRights.js";
 import { activateUser, deactivateUser, getUsers } from "../services/adminService.js";
+import { UserRightsEditor } from "../features/admin/UserRightsEditor.jsx";
+import { canManageUserRights } from "../features/admin/userRightsConfig.js";
 
 function StatusPill({ value }) {
   const normalizedValue = String(value ?? "ACTIVE").toUpperCase();
@@ -117,11 +119,13 @@ function getDisplayName(user) {
 }
 
 function AdminUsersPage() {
-  const { canAccessAdmin, canSeeStamp, isRightsLoading } = useRights();
+  const { canAccessAdmin, canSeeStamp, isRightsLoading, userType } = useRights();
+  const currentUserType = String(userType ?? "").toUpperCase();
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [refreshToken, setRefreshToken] = useState(0);
@@ -189,6 +193,12 @@ function AdminUsersPage() {
     [filteredUsers],
   );
 
+  const selectedUser = useMemo(
+    () => users.find((user) => user.userId === selectedUserId) ?? null,
+    [selectedUserId, users],
+  );
+  const canManageSelectedUser = canManageUserRights(currentUserType, selectedUser?.userType);
+
   async function handleStatusChange(user, nextStatus) {
     const actionKey = `${user.userId}-${nextStatus}`;
     setProcessingKey(actionKey);
@@ -207,6 +217,14 @@ function AdminUsersPage() {
     } finally {
       setProcessingKey("");
     }
+  }
+
+  function openRightsEditor(user) {
+    setSelectedUserId(user.userId);
+  }
+
+  function closeRightsEditor() {
+    setSelectedUserId("");
   }
 
   if (isRightsLoading || isLoading) {
@@ -275,6 +293,17 @@ function AdminUsersPage() {
           </div>
         </Card>
       </Motion.section>
+
+      {selectedUser && canManageSelectedUser ? (
+        <Motion.section className="min-w-0" variants={fadeUp}>
+          <UserRightsEditor
+            onClose={closeRightsEditor}
+            onSaved={() => setRefreshToken((currentValue) => currentValue + 1)}
+            viewerUserType={currentUserType}
+            user={selectedUser}
+          />
+        </Motion.section>
+      ) : null}
 
       <Motion.section className="min-w-0" variants={fadeUp}>
         <Card className="rounded-[2rem] border-white/80 bg-white/94 shadow-sm">
@@ -399,7 +428,17 @@ function AdminUsersPage() {
                         >
                           {isBusy && isActive ? "Updating..." : "Deactivate"}
                         </Button>
-                        {isSuperadmin ? (
+                        {canManageUserRights(currentUserType, user.userType) ? (
+                          <Button
+                            className="rounded-full border-slate-900/10 bg-slate-100 text-slate-800 hover:bg-slate-200"
+                            onClick={() => openRightsEditor(user)}
+                            type="button"
+                            variant="outline"
+                          >
+                            Permissions
+                          </Button>
+                        ) : null}
+                        {currentUserType === "SUPERADMIN" ? (
                           <Badge className="rounded-full border-violet-900/15 bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-800 hover:bg-violet-50">
                             Locked account
                           </Badge>
@@ -480,7 +519,17 @@ function AdminUsersPage() {
                               >
                                 {isBusy && isActive ? "Updating..." : "Deactivate"}
                               </Button>
-                              {isSuperadmin ? (
+                              {canManageUserRights(currentUserType, user.userType) ? (
+                                <Button
+                                  className="rounded-full border-slate-900/10 bg-slate-100 text-slate-800 hover:bg-slate-200"
+                                  onClick={() => openRightsEditor(user)}
+                                  type="button"
+                                  variant="outline"
+                                >
+                                  Permissions
+                                </Button>
+                              ) : null}
+                              {currentUserType === "SUPERADMIN" ? (
                                 <Badge className="rounded-full border-violet-900/15 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-800 hover:bg-violet-50">
                                   Locked
                                 </Badge>

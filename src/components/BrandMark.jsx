@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils.js";
 function BrandMark({
   className,
   imageClassName,
+  frame = true,
   showText = true,
   tone = "default",
 }) {
@@ -13,7 +14,12 @@ function BrandMark({
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <div className="flex shrink-0 items-center justify-center rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+      <div
+        className={cn(
+          "flex shrink-0 items-center justify-center",
+          frame ? "rounded-2xl border border-slate-200/80 bg-white shadow-sm" : "bg-transparent shadow-none",
+        )}
+      >
         <img
           alt="Hope, Inc. logo"
           className={cn("h-10 w-10 rounded-[1rem] object-cover", imageClassName)}
