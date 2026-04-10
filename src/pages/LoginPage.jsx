@@ -39,6 +39,40 @@ function LoginPage() {
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+  }
+
+  function validateField(name, value) {
+    if (name === "email") {
+      const email = value.trim();
+
+      if (!email) {
+        return "Email is required.";
+      }
+
+      if (!isValidEmail(email)) {
+        return "Enter a valid email address.";
+      }
+
+      return "";
+    }
+
+    if (name === "password") {
+      if (!value.trim()) {
+        return "Password is required.";
+      }
+
+      if (value.length < 8) {
+        return "Password must be at least 8 characters.";
+      }
+
+      return "";
+    }
+
+    return "";
+  }
+
   useEffect(() => {
     if (currentUser) {
       const redirectTarget = location.state?.from
@@ -51,9 +85,15 @@ function LoginPage() {
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: "" }));
-    setSuccessMessage("");
-    setAuthError("");
+    setErrors((current) => ({ ...current, [name]: validateField(name, value) }));
+
+    if (successMessage) {
+      setSuccessMessage("");
+    }
+
+    if (authError && (name === "email" || name === "password")) {
+      setAuthError("");
+    }
   }
 
   function validate() {
@@ -61,7 +101,7 @@ function LoginPage() {
 
     if (!formData.email.trim()) {
       nextErrors.email = "Email is required.";
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+    } else if (!isValidEmail(formData.email.trim())) {
       nextErrors.email = "Enter a valid email address.";
     }
 
@@ -290,7 +330,6 @@ function LoginPage() {
                 {successMessage ? (
                   <Motion.div variants={fadeUp}>
                     <Alert className="rounded-2xl border-emerald-200 bg-emerald-50 text-emerald-900">
-                      <AlertTitle>Status update</AlertTitle>
                       <AlertDescription>{successMessage}</AlertDescription>
                     </Alert>
                   </Motion.div>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import { LookupPageShell } from "../features/lookups/LookupPageShell.jsx";
 import { getCustomers } from "../services/lookupService.js";
 
@@ -77,13 +78,19 @@ function CustomerLookupPage() {
       title="Customers"
     >
       <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
-        <input
-          className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search customer code, name, or address"
-          type="search"
-          value={query}
-        />
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Search customers
+          </span>
+          <input
+            aria-label="Search customers"
+            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search customer code, name, or address"
+            type="search"
+            value={query}
+          />
+        </label>
       </section>
 
       {error ? (
@@ -92,7 +99,7 @@ function CustomerLookupPage() {
         </section>
       ) : null}
 
-      <div className="grid gap-4 xl:hidden">
+      <div className="grid gap-4 lg:hidden">
         {filteredCustomers.map((customer) => (
           <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={customer.custno}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
@@ -109,29 +116,27 @@ function CustomerLookupPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-        <div className="app-scrollbar workspace-table-scroll">
-          <table className="min-w-full border-collapse text-left text-[13px]">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Code</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Customer</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Address</th>
-                <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em]">Pay term</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCustomers.map((customer) => (
-                <tr className="border-t border-slate-900/5" key={customer.custno}>
-                  <td className="px-4 py-3 font-black tracking-tight text-slate-900">{customer.custno}</td>
-                  <td className="px-4 py-3 text-sm font-semibold text-slate-900">{customer.custname}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{customer.address}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{customer.payterm}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
+        <Table className="min-w-full text-left text-[13px]">
+          <TableHeader className="bg-slate-900 text-white">
+            <TableRow>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Code</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Customer</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Address</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Pay term</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCustomers.map((customer) => (
+              <TableRow className="border-t border-slate-900/5 odd:bg-white even:bg-slate-50/40" key={customer.custno}>
+                <TableCell className="px-4 py-3 font-black tracking-tight text-slate-900">{customer.custno}</TableCell>
+                <TableCell className="px-4 py-3 text-sm font-semibold text-slate-900">{customer.custname}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{customer.address}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{customer.payterm}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </LookupPageShell>
   );

@@ -1,18 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { getCustomers, getEmployees, getPriceHistory } from "../../services/lookupService.js";
+import { getCustomers, getEmployees } from "../../services/lookupService.js";
 import { getSales } from "../../services/salesService.js";
 import { supabase } from "../../lib/supabaseClient.js";
 import { buildFullName } from "./salesFormatting.js";
-
-function buildLatestPriceMap(priceHistoryRows) {
-  return (priceHistoryRows ?? []).reduce((priceMap, row) => {
-    if (!priceMap[row.prodCode]) {
-      priceMap[row.prodCode] = Number(row.unitPrice ?? 0);
-    }
-
-    return priceMap;
-  }, {});
-}
 
 function buildLookupMap(rows, keyName) {
   return (rows ?? []).reduce((lookupMap, row) => {
@@ -21,7 +11,7 @@ function buildLookupMap(rows, keyName) {
   }, {});
 }
 
-function buildDetailStatsMap(details, priceMap) {
+function buildDetailStatsMap(details) {
   return (details ?? []).reduce((statsMap, detail) => {
     if (!statsMap[detail.transNo]) {
       statsMap[detail.transNo] = {
@@ -31,7 +21,7 @@ function buildDetailStatsMap(details, priceMap) {
       };
     }
 
-    const unitPrice = Number(priceMap[detail.prodCode] ?? 0);
+    const unitPrice = Number(detail.unitPrice ?? 0);
     statsMap[detail.transNo].lineCount += 1;
     statsMap[detail.transNo].totalQuantity += Number(detail.quantity ?? 0);
     statsMap[detail.transNo].totalAmount += Number(detail.quantity ?? 0) * unitPrice;
@@ -47,7 +37,7 @@ async function getVisibleDetails(userType) {
 
   let query = supabase
     .from("salesdetail")
-    .select("transNo:transno, prodCode:prodcode, quantity, record_status");
+    .select("transNo:transno, prodCode:prodcode, quantity, unitPrice:unitprice_snapshot, record_status");
 
   if (String(userType ?? "").toUpperCase() === "USER") {
     query = query.eq("record_status", "ACTIVE");
@@ -66,12 +56,11 @@ function buildEnrichedSales({
   customers,
   employees,
   details,
-  latestPriceMap,
   sales,
 }) {
   const customerMap = buildLookupMap(customers, "custno");
   const employeeMap = buildLookupMap(employees, "empno");
-  const detailStatsMap = buildDetailStatsMap(details, latestPriceMap);
+  const detailStatsMap = buildDetailStatsMap(details);
 
   return (sales ?? []).map((sale) => {
     const customer = customerMap[sale.custNo];
@@ -115,12 +104,11 @@ export function useSalesOverview(userType) {
       setError("");
 
       try {
-        const [salesRows, customerRows, employeeRows, priceHistoryRows, detailRows] =
+        const [salesRows, customerRows, employeeRows, detailRows] =
           await Promise.all([
             getSales(userType),
             getCustomers(),
             getEmployees(),
-            getPriceHistory(),
             getVisibleDetails(userType),
           ]);
 
@@ -128,13 +116,11 @@ export function useSalesOverview(userType) {
           return;
         }
 
-        const latestPriceMap = buildLatestPriceMap(priceHistoryRows);
         setSales(
           buildEnrichedSales({
             customers: customerRows,
             employees: employeeRows,
             details: detailRows,
-            latestPriceMap,
             sales: salesRows,
           }),
         );

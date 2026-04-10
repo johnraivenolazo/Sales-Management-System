@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { getCurrentPrice } from "../../services/lookupService.js";
 import { formatCurrency } from "./salesFormatting.js";
@@ -21,8 +21,55 @@ export function LineItemFormDialog({
   onSubmit,
   productOptions,
 }) {
+  const dialogId = useId();
+  const containerRef = useRef(null);
+  const closeButtonRef = useRef(null);
   const [priceError, setPriceError] = useState("");
   const [resolvedPrice, setResolvedPrice] = useState(null);
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusable = containerRef.current?.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+
+      if (!focusable || focusable.length === 0) {
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
 
   useEffect(() => {
     let active = true;
@@ -60,21 +107,34 @@ export function LineItemFormDialog({
     };
   }, [form.prodCode]);
 
+  function handleOverlayClick(event) {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 px-4 py-4 sm:items-center sm:px-6">
-      <div className="app-scrollbar max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-slate-900/5 bg-white px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6">
+    <div
+      aria-labelledby={dialogId}
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 px-4 py-4 sm:items-center sm:px-6"
+      onMouseDown={handleOverlayClick}
+      role="dialog"
+    >
+      <div className="app-scrollbar max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-slate-900/5 bg-white px-5 py-5 shadow-2xl sm:rounded-[2rem] sm:px-7 sm:py-6" ref={containerRef}>
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
               Sales detail
             </p>
-            <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
+            <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900" id={dialogId}>
               {mode === "create" ? "Add line item" : `Edit ${form.prodCode}`}
             </h2>
           </div>
           <button
             className="inline-flex rounded-full border border-slate-900/10 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-900/25 hover:bg-white"
             onClick={onClose}
+            ref={closeButtonRef}
             type="button"
           >
             Close

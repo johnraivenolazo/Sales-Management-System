@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import { LookupPageShell } from "../features/lookups/LookupPageShell.jsx";
 import { formatCurrency } from "../features/sales/salesFormatting.js";
 import { getPriceHistory, getProducts } from "../services/lookupService.js";
@@ -96,13 +97,19 @@ function ProductLookupPage() {
       title="Product and current-price directory"
     >
       <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
-        <input
-          className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search product code or description"
-          type="search"
-          value={query}
-        />
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Search products
+          </span>
+          <input
+            aria-label="Search products"
+            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search product code or description"
+            type="search"
+            value={query}
+          />
+        </label>
       </section>
 
       {error ? (
@@ -111,7 +118,7 @@ function ProductLookupPage() {
         </section>
       ) : null}
 
-      <div className="grid gap-4 xl:hidden">
+      <div className="grid gap-4 lg:hidden">
         {filteredProducts.map((product) => (
           <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={product.prodCode}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
@@ -132,29 +139,27 @@ function ProductLookupPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-        <div className="app-scrollbar overflow-x-auto">
-          <table className="min-w-full border-collapse text-left">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Code</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Description</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Unit</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Current price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((product) => (
-                <tr className="border-t border-slate-900/5" key={product.prodCode}>
-                  <td className="px-5 py-4 font-black tracking-tight text-slate-900">{product.prodCode}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-slate-900">{product.description}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{product.unit}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{formatCurrency(product.currentPrice)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm lg:block">
+        <Table className="min-w-full text-left">
+          <TableHeader className="bg-slate-900 text-white">
+            <TableRow>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Code</TableHead>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Description</TableHead>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Unit</TableHead>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Current price</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredProducts.map((product) => (
+              <TableRow className="border-t border-slate-900/5 odd:bg-white even:bg-slate-50/40" key={product.prodCode}>
+                <TableCell className="px-5 py-4 font-black tracking-tight text-slate-900">{product.prodCode}</TableCell>
+                <TableCell className="px-5 py-4 text-sm font-semibold text-slate-900">{product.description}</TableCell>
+                <TableCell className="px-5 py-4 text-sm text-slate-600">{product.unit}</TableCell>
+                <TableCell className="px-5 py-4 text-sm text-slate-600">{formatCurrency(product.currentPrice)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </LookupPageShell>
   );

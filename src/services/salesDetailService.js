@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabaseClient.js";
 
 const salesDetailSelectClause =
-  "transNo:transno, prodCode:prodcode, quantity, record_status, stamp";
+  "transNo:transno, prodCode:prodcode, quantity, unitPrice:unitprice_snapshot, record_status, stamp";
 
 function requireSupabase() {
   if (!supabase) {

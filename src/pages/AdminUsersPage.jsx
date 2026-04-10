@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { Card, CardContent } from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
+import { Dialog, DialogContent } from "@/components/ui/dialog.jsx";
 import {
   Table,
   TableBody,
@@ -13,10 +14,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.jsx";
+import { DialogDescription, DialogTitle } from "@/components/ui/dialog.jsx";
 import { fadeUp, scaleIn, staggerContainer } from "@/lib/motion.js";
+import EmptyStatePanel from "../components/EmptyStatePanel.jsx";
 import PageLoadingState from "../components/PageLoadingState.jsx";
 import { useRights } from "../hooks/useRights.js";
 import { activateUser, deactivateUser, getUsers } from "../services/adminService.js";
+import { UserRightsEditor } from "../features/admin/UserRightsEditor.jsx";
+import { canManageUserRights } from "../features/admin/userRightsConfig.js";
 
 function StatusPill({ value }) {
   const normalizedValue = String(value ?? "ACTIVE").toUpperCase();
@@ -95,19 +100,11 @@ function AccessDeniedState() {
 
 function EmptyState() {
   return (
-    <Card className="rounded-[2rem] border-dashed border-slate-900/10 bg-white/94 shadow-sm">
-      <CardContent className="p-10 text-center">
-        <Badge className="rounded-full bg-amber-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-amber-900 hover:bg-amber-100">
-          No users found
-        </Badge>
-        <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
-          No accounts matched the current filters.
-        </h3>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600">
-          Change the search query, status, or role filter to widen the visible admin user set.
-        </p>
-      </CardContent>
-    </Card>
+    <EmptyStatePanel
+      eyebrow="No matching records"
+      title="No accounts matched the current filters."
+      description="Change search query, role, or status filters to widen the visible result set."
+    />
   );
 }
 
@@ -117,11 +114,13 @@ function getDisplayName(user) {
 }
 
 function AdminUsersPage() {
-  const { canAccessAdmin, canSeeStamp, isRightsLoading } = useRights();
+  const { canAccessAdmin, canSeeStamp, isRightsLoading, userType } = useRights();
+  const currentUserType = String(userType ?? "").toUpperCase();
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [refreshToken, setRefreshToken] = useState(0);
@@ -189,6 +188,12 @@ function AdminUsersPage() {
     [filteredUsers],
   );
 
+  const selectedUser = useMemo(
+    () => users.find((user) => user.userId === selectedUserId) ?? null,
+    [selectedUserId, users],
+  );
+  const canManageSelectedUser = canManageUserRights(currentUserType, selectedUser?.userType);
+
   async function handleStatusChange(user, nextStatus) {
     const actionKey = `${user.userId}-${nextStatus}`;
     setProcessingKey(actionKey);
@@ -209,6 +214,14 @@ function AdminUsersPage() {
     }
   }
 
+  function openRightsEditor(user) {
+    setSelectedUserId(user.userId);
+  }
+
+  function closeRightsEditor() {
+    setSelectedUserId("");
+  }
+
   if (isRightsLoading || isLoading) {
     return (
       <PageLoadingState
@@ -225,75 +238,77 @@ function AdminUsersPage() {
   }
 
   return (
-    <Motion.div
-      animate="show"
-      className="grid min-w-0 gap-4 xl:min-h-[calc(100dvh-8.5rem)] xl:grid-rows-[auto_auto_minmax(24rem,1fr)]"
-      initial="hidden"
-      variants={staggerContainer}
-    >
-      <Motion.section className="min-w-0" variants={scaleIn}>
-        <Card className="overflow-hidden rounded-[2.6rem] border-white/80 bg-white/95 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
-          <div className="grid gap-0">
-            <div className="border-b border-slate-900/6 bg-[linear-gradient(135deg,#0d1220_0%,#1c2439_42%,#2f425f_100%)] px-5 py-5 text-white sm:px-7">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-300 hover:bg-white/10">
-                  Admin
-                </Badge>
-                <Badge className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/72 hover:bg-white/8">
-                  SUPERADMIN locked
-                </Badge>
-              </div>
-              <div className="mt-4 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(17rem,25rem)] xl:items-end">
-                <div className="min-w-0 max-w-2xl">
-                  <h2 className="max-w-2xl text-3xl font-black tracking-tight sm:text-[2.6rem]">
-                    Manage users
-                  </h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/78 sm:text-[15px]">
-                    Activate, deactivate, and audit account status. SUPERADMIN rows stay locked.
-                  </p>
+    <>
+      <Motion.div
+        animate="show"
+        className="grid min-w-0 gap-4 xl:min-h-[calc(100dvh-8.5rem)] xl:grid-rows-[auto_auto_1fr]"
+        initial="hidden"
+        variants={staggerContainer}
+      >
+        <Motion.section className="min-w-0" variants={scaleIn}>
+          <Card className="overflow-hidden rounded-[2.6rem] border-white/80 bg-white/95 shadow-[0_30px_90px_rgba(15,23,42,0.08)]">
+            <div className="grid gap-0">
+              <div className="border-b border-slate-900/6 bg-[linear-gradient(135deg,#0d1220_0%,#1c2439_42%,#2f425f_100%)] px-5 py-5 text-white sm:px-7">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-300 hover:bg-white/10">
+                    Admin
+                  </Badge>
+                  <Badge className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/72 hover:bg-white/8">
+                    SUPERADMIN locked
+                  </Badge>
                 </div>
-                <div className="grid min-w-0 gap-2 sm:grid-cols-2 xl:grid-cols-1">
-                  <div className="rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-sm leading-6 text-white/72 backdrop-blur-sm">
-                    Search and update account status from one workspace.
+                <div className="mt-4 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(17rem,25rem)] xl:items-end">
+                  <div className="min-w-0 max-w-2xl">
+                    <h2 className="max-w-2xl text-3xl font-black tracking-tight sm:text-[2.6rem]">
+                      Manage users
+                    </h2>
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-white/78 sm:text-[15px]">
+                      Activate, deactivate, and audit account status. SUPERADMIN rows stay locked.
+                    </p>
                   </div>
-                  <div className="rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-sm leading-6 text-white/72 backdrop-blur-sm">
-                    SUPERADMIN rows stay visible for audits and remain locked.
+                  <div className="grid min-w-0 gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                    <div className="rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-sm leading-6 text-white/72 backdrop-blur-sm">
+                      Search and update account status from one workspace.
+                    </div>
+                    <div className="rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-sm leading-6 text-white/72 backdrop-blur-sm">
+                      SUPERADMIN rows stay visible for audits and remain locked.
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <Motion.div
+                className="grid min-w-0 gap-3 bg-[#efe3cd] px-5 py-4 sm:grid-cols-2 xl:grid-cols-4 xl:px-7"
+                variants={staggerContainer}
+              >
+                <MetricCard label="Users in view" value={metrics.total} />
+                <MetricCard label="Active" note="Can sign in" tone="warm" value={metrics.active} />
+                <MetricCard label="Inactive" note="Needs activation" tone="warm" value={metrics.inactive} />
+                <MetricCard label="Locked rows" note="SUPERADMIN" tone="accent" value={metrics.locked} />
+              </Motion.div>
             </div>
+          </Card>
+        </Motion.section>
 
-            <Motion.div
-              className="grid min-w-0 gap-3 bg-[#efe3cd] px-5 py-4 sm:grid-cols-2 xl:grid-cols-4 xl:px-7"
-              variants={staggerContainer}
-            >
-              <MetricCard label="Users in view" value={metrics.total} />
-              <MetricCard label="Active" note="Can sign in" tone="warm" value={metrics.active} />
-              <MetricCard label="Inactive" note="Needs activation" tone="warm" value={metrics.inactive} />
-              <MetricCard label="Locked rows" note="SUPERADMIN" tone="accent" value={metrics.locked} />
-            </Motion.div>
-          </div>
-        </Card>
-      </Motion.section>
+        <Motion.section className="min-w-0" variants={fadeUp}>
+          <Card className="rounded-[2rem] border-white/80 bg-white/94 shadow-sm">
+            <CardContent className="grid gap-3 p-4 xl:grid-cols-[1.5fr_0.8fr_0.8fr]">
+              <label className="grid gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                  Search
+                </span>
+                <Input
+                  aria-label="Search users"
+                  className="h-11 rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Name, email, or user ID"
+                  type="search"
+                  value={query}
+                />
+              </label>
 
-      <Motion.section className="min-w-0" variants={fadeUp}>
-        <Card className="rounded-[2rem] border-white/80 bg-white/94 shadow-sm">
-          <CardContent className="grid gap-3 p-4 xl:grid-cols-[1.5fr_0.8fr_0.8fr]">
-            <label className="grid gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
-                Search
-              </span>
-              <Input
-                className="h-11 rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm focus-visible:border-slate-900 focus-visible:ring-slate-950/10"
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Name, email, or user ID"
-                type="search"
-                value={query}
-              />
-            </label>
-
-            <label className="grid gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              <label className="grid gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                 Role
               </span>
               <select
@@ -339,7 +354,7 @@ function AdminUsersPage() {
         <EmptyState />
       ) : (
         <>
-          <div className="grid gap-4 xl:hidden">
+          <div className="grid gap-4 lg:hidden">
             {filteredUsers.map((user) => {
               const isSuperadmin = user.userType === "SUPERADMIN";
               const isActive = user.recordStatus === "ACTIVE";
@@ -399,7 +414,17 @@ function AdminUsersPage() {
                         >
                           {isBusy && isActive ? "Updating..." : "Deactivate"}
                         </Button>
-                        {isSuperadmin ? (
+                        {canManageUserRights(currentUserType, user.userType) ? (
+                          <Button
+                            className="rounded-full border-slate-900/10 bg-slate-100 text-slate-800 hover:bg-slate-200"
+                            onClick={() => openRightsEditor(user)}
+                            type="button"
+                            variant="outline"
+                          >
+                            Permissions
+                          </Button>
+                        ) : null}
+                        {currentUserType === "SUPERADMIN" ? (
                           <Badge className="rounded-full border-violet-900/15 bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-800 hover:bg-violet-50">
                             Locked account
                           </Badge>
@@ -412,21 +437,20 @@ function AdminUsersPage() {
             })}
           </div>
 
-          <Motion.section className="hidden min-h-0 min-w-0 xl:block" variants={fadeUp}>
-            <Card className="flex min-h-[24rem] min-w-0 overflow-hidden rounded-[2rem] border-white/80 bg-white/95 shadow-sm xl:h-full">
-              <CardContent className="flex min-h-0 flex-1 p-0">
-                <div className="app-scrollbar workspace-table-scroll min-h-0 min-w-0 flex-1">
-                  <Table>
-                  <TableHeader className="bg-slate-950">
+          <Motion.section className="hidden min-w-0 lg:block" variants={fadeUp}>
+            <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
+              <div className="overflow-x-auto app-scrollbar">
+                <Table className="min-w-[64rem] [&_td]:align-top [&_th]:whitespace-nowrap">
+                  <TableHeader className="sticky top-0 z-10 bg-slate-950">
                     <TableRow className="border-slate-900/5 hover:bg-slate-950">
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">User</TableHead>
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Role</TableHead>
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Status</TableHead>
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Username</TableHead>
+                      <TableHead className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">User</TableHead>
+                      <TableHead className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Role</TableHead>
+                      <TableHead className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Status</TableHead>
+                      <TableHead className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Username</TableHead>
                       {canSeeStamp ? (
-                        <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Stamp</TableHead>
+                        <TableHead className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Stamp</TableHead>
                       ) : null}
-                      <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Actions</TableHead>
+                      <TableHead className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -438,32 +462,32 @@ function AdminUsersPage() {
                         processingKey === `${user.userId}-INACTIVE`;
 
                       return (
-                        <TableRow key={user.userId}>
-                          <TableCell className="px-4 py-3 align-top">
-                            <p className="font-black tracking-tight text-slate-900">{getDisplayName(user)}</p>
-                            <p className="mt-1 text-sm text-slate-600">{user.email || user.userId}</p>
-                            <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                        <TableRow className="odd:bg-white even:bg-slate-50/40" key={user.userId}>
+                          <TableCell className="px-4 py-3.5">
+                            <p className="font-bold tracking-tight text-slate-900">{getDisplayName(user)}</p>
+                            <p className="mt-1 break-all text-sm text-slate-600">{user.email || user.userId}</p>
+                            <p className="mt-1 break-all text-[11px] uppercase tracking-[0.18em] text-slate-400">
                               {user.userId}
                             </p>
                           </TableCell>
-                          <TableCell className="px-4 py-3 align-top">
+                          <TableCell className="px-4 py-3.5">
                             <UserTypePill value={user.userType} />
                           </TableCell>
-                          <TableCell className="px-4 py-3 align-top">
+                          <TableCell className="px-4 py-3.5">
                             <StatusPill value={user.recordStatus} />
                           </TableCell>
-                          <TableCell className="px-4 py-3 align-top text-sm text-slate-600">
+                          <TableCell className="px-4 py-3.5 text-sm text-slate-600">
                             {user.username || "N/A"}
                           </TableCell>
                           {canSeeStamp ? (
-                            <TableCell className="px-4 py-3 align-top text-sm text-slate-500">
+                            <TableCell className="px-4 py-3.5 break-words text-sm text-slate-500">
                               {user.stamp || "N/A"}
                             </TableCell>
                           ) : null}
-                          <TableCell className="px-4 py-3 align-top">
-                            <div className="flex flex-wrap gap-2">
+                          <TableCell className="px-4 py-3.5">
+                            <div className="flex flex-wrap items-center gap-1.5">
                               <Button
-                                className="rounded-full border-emerald-700/15 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                                className="h-8 rounded-full border-emerald-700/15 bg-emerald-50 px-3 text-xs font-semibold text-emerald-800 hover:bg-emerald-100"
                                 disabled={isSuperadmin || isActive || isBusy}
                                 onClick={() => handleStatusChange(user, "ACTIVE")}
                                 type="button"
@@ -472,7 +496,7 @@ function AdminUsersPage() {
                                 {isBusy && !isActive ? "Updating..." : "Activate"}
                               </Button>
                               <Button
-                                className="rounded-full border-rose-900/15 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                                className="h-8 rounded-full border-rose-900/15 bg-rose-50 px-3 text-xs font-semibold text-rose-700 hover:bg-rose-100"
                                 disabled={isSuperadmin || !isActive || isBusy}
                                 onClick={() => handleStatusChange(user, "INACTIVE")}
                                 type="button"
@@ -480,8 +504,18 @@ function AdminUsersPage() {
                               >
                                 {isBusy && isActive ? "Updating..." : "Deactivate"}
                               </Button>
-                              {isSuperadmin ? (
-                                <Badge className="rounded-full border-violet-900/15 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-800 hover:bg-violet-50">
+                              {canManageUserRights(currentUserType, user.userType) ? (
+                                <Button
+                                  className="h-8 rounded-full border-slate-900/10 bg-slate-100 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-200"
+                                  onClick={() => openRightsEditor(user)}
+                                  type="button"
+                                  variant="outline"
+                                >
+                                  Permissions
+                                </Button>
+                              ) : null}
+                              {currentUserType === "SUPERADMIN" ? (
+                                <Badge className="rounded-full border-violet-900/15 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-800 hover:bg-violet-50">
                                   Locked
                                 </Badge>
                               ) : null}
@@ -491,14 +525,33 @@ function AdminUsersPage() {
                       );
                     })}
                   </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
+                </Table>
+              </div>
             </Card>
           </Motion.section>
         </>
       )}
+
+      <Dialog onOpenChange={(open) => !open && closeRightsEditor()} open={selectedUserId !== ""}>
+        <DialogContent className="w-[95vw] sm:w-auto sm:max-w-2xl max-h-[90vh] p-0 flex flex-col">
+          <DialogTitle className="sr-only">Permission editor</DialogTitle>
+          <DialogDescription className="sr-only">
+            Edit permissions for the selected account.
+          </DialogDescription>
+          <div className="app-scrollbar overflow-y-auto flex-1 px-4 py-4 sm:px-6 sm:py-6">
+            {selectedUser && canManageSelectedUser ? (
+              <UserRightsEditor
+                onClose={closeRightsEditor}
+                onSaved={() => setRefreshToken((currentValue) => currentValue + 1)}
+                viewerUserType={currentUserType}
+                user={selectedUser}
+              />
+            ) : null}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Motion.div>
+    </>
   );
 }
 

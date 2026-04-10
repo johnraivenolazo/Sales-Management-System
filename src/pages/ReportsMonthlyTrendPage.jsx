@@ -1,4 +1,5 @@
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import {
   ReportAlert,
   ReportEmptyState,
@@ -96,30 +97,28 @@ function ReportsMonthlyTrendPage() {
 
           <ReportPanel description="Monthly totals in table form." title="Monthly detail">
             <section className="overflow-hidden rounded-[1.35rem] border border-slate-900/6 bg-white">
-              <div className="app-scrollbar workspace-table-scroll">
-                <table className="min-w-full border-collapse text-left text-[13px]">
-                  <thead className="bg-slate-950 text-white">
-                    <tr>
-                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Month</th>
-                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Start date</th>
-                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Transactions</th>
-                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Quantity</th>
-                      <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">Revenue</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row) => (
-                      <tr className="border-t border-slate-900/6" key={row.saleMonth}>
-                        <td className="px-4 py-3 font-semibold text-slate-900">{row.saleMonth}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{formatMonthLabel(row.monthStart)}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{formatCompactNumber(row.totalTransactions)}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{formatQuantity(row.totalQuantity)}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-900">{formatCurrency(row.totalRevenue)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <Table className="min-w-full text-left text-[13px]">
+                <TableHeader className="bg-slate-950 text-white">
+                  <TableRow>
+                    <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Month</TableHead>
+                    <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Start date</TableHead>
+                    <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Transactions</TableHead>
+                    <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Quantity</TableHead>
+                    <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-white">Revenue</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow className="border-t border-slate-900/6 odd:bg-white even:bg-slate-50/40" key={row.saleMonth}>
+                      <TableCell className="px-4 py-3 font-semibold text-slate-900">{row.saleMonth}</TableCell>
+                      <TableCell className="px-4 py-3 text-sm text-slate-600">{formatMonthLabel(row.monthStart)}</TableCell>
+                      <TableCell className="px-4 py-3 text-sm text-slate-600">{formatCompactNumber(row.totalTransactions)}</TableCell>
+                      <TableCell className="px-4 py-3 text-sm text-slate-600">{formatQuantity(row.totalQuantity)}</TableCell>
+                      <TableCell className="px-4 py-3 text-sm font-semibold text-slate-900">{formatCurrency(row.totalRevenue)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </section>
           </ReportPanel>
 

@@ -1,0 +1,263 @@
+import { useEffect, useMemo, useState } from "react";
+import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
+import { LookupPageShell } from "../features/lookups/LookupPageShell.jsx";
+import {
+  formatCurrency,
+  formatDisplayDate,
+  formatQuantity,
+} from "../features/sales/salesFormatting.js";
+import { useRights } from "../hooks/useRights.js";
+import { getOldTransactionHistory } from "../services/oldTransactionHistoryService.js";
+
+function AccessDeniedState() {
+  return (
+    <section className="rounded-[2rem] border border-amber-900/10 bg-white p-8 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
+        Transaction history access
+      </p>
+      <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+        Your current rights map does not include Sales viewing access.
+      </h2>
+      <p className="mt-4 text-base leading-7 text-slate-600">
+        Ask an admin to grant Sales access.
+      </p>
+    </section>
+  );
+}
+
+function OldTransactionsPage() {
+  const { canViewSales, isRightsLoading } = useRights();
+  const [rows, setRows] = useState([]);
+  const [query, setQuery] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadRows() {
+      try {
+        const loadedRows = await getOldTransactionHistory();
+
+        if (!active) {
+          return;
+        }
+
+        setRows(loadedRows);
+        setIsLoading(false);
+      } catch (nextError) {
+        if (!active) {
+          return;
+        }
+
+        setError(nextError.message ?? "Unable to load old transaction history.");
+        setIsLoading(false);
+      }
+    }
+
+    void loadRows();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const filteredRows = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return rows.filter((row) => {
+      const matchesQuery =
+        !normalizedQuery ||
+        row.transNo.toLowerCase().includes(normalizedQuery) ||
+        row.prodCode.toLowerCase().includes(normalizedQuery) ||
+        row.description.toLowerCase().includes(normalizedQuery) ||
+        row.customerName.toLowerCase().includes(normalizedQuery) ||
+        row.employeeName.toLowerCase().includes(normalizedQuery);
+
+      const matchesStartDate = !startDate || row.salesDate >= startDate;
+      const matchesEndDate = !endDate || row.salesDate <= endDate;
+
+      return matchesQuery && matchesStartDate && matchesEndDate;
+    });
+  }, [endDate, query, rows, startDate]);
+
+  const metrics = useMemo(() => {
+    const transactionSet = new Set(filteredRows.map((row) => row.transNo));
+    const totalValue = filteredRows.reduce(
+      (sum, row) => sum + Number(row.lineTotal ?? 0),
+      0,
+    );
+
+    return {
+      lineItems: filteredRows.length,
+      transactions: transactionSet.size,
+      totalValue,
+    };
+  }, [filteredRows]);
+
+  if (isLoading || isRightsLoading) {
+    return (
+      <PageLoadingState
+        compact
+        eyebrow="Old transactions"
+        title="Loading old transaction history"
+        description="Preparing immutable sales line records."
+      />
+    );
+  }
+
+  if (!canViewSales) {
+    return <AccessDeniedState />;
+  }
+
+  return (
+    <LookupPageShell
+      eyebrow="Old transactions"
+      metrics={[
+        { label: "Visible line items", value: metrics.lineItems },
+        { label: "Transactions", value: metrics.transactions },
+        { label: "Snapshot total", value: formatCurrency(metrics.totalValue) },
+      ]}
+      summary="This ledger is separate from product price history and shows the frozen unit price used by each historical sales line item."
+      title="Old transaction price history"
+    >
+      <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
+        <div className="grid gap-3 lg:grid-cols-[1.3fr_0.85fr_0.85fr]">
+          <label className="grid gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Search ledger
+            </span>
+            <input
+              aria-label="Search old transactions"
+              className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search transaction, product, customer, employee"
+              type="search"
+              value={query}
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Start date
+            </span>
+            <input
+              aria-label="Old transactions start date"
+              className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+              onChange={(event) => setStartDate(event.target.value)}
+              type="date"
+              value={startDate}
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              End date
+            </span>
+            <input
+              aria-label="Old transactions end date"
+              className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+              onChange={(event) => setEndDate(event.target.value)}
+              type="date"
+              value={endDate}
+            />
+          </label>
+        </div>
+      </section>
+
+      {error ? (
+        <section className="rounded-[2rem] border border-rose-900/10 bg-rose-50 px-6 py-5 text-sm leading-6 text-rose-900 shadow-sm">
+          {error}
+        </section>
+      ) : null}
+
+      <div className="grid gap-4 lg:hidden">
+        {filteredRows.map((row) => (
+          <article
+            className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm"
+            key={`${row.transNo}-${row.prodCode}-${row.salesDate}`}
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
+              {row.transNo}
+            </p>
+            <h3 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
+              {row.prodCode} · {row.description}
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">
+              {row.customerName} · {row.employeeName}
+            </p>
+
+            <dl className="mt-5 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Sales date
+                </dt>
+                <dd className="mt-1 font-semibold text-slate-900">
+                  {formatDisplayDate(row.salesDate)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Quantity
+                </dt>
+                <dd className="mt-1 font-semibold text-slate-900">
+                  {formatQuantity(row.quantity)} {row.unit}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Frozen unit price
+                </dt>
+                <dd className="mt-1 font-semibold text-slate-900">
+                  {formatCurrency(row.unitPrice)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Line total
+                </dt>
+                <dd className="mt-1 font-semibold text-slate-900">
+                  {formatCurrency(row.lineTotal)}
+                </dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+
+      <section className="hidden overflow-hidden rounded-[1.75rem] border border-slate-900/5 bg-white shadow-sm lg:block">
+        <Table className="min-w-[64rem] text-left text-[13px]">
+          <TableHeader className="bg-slate-900 text-white">
+            <TableRow>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Transaction</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Sales date</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Customer</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Employee</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Product</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Qty</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Frozen unit price</TableHead>
+              <TableHead className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">Line total</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredRows.map((row) => (
+              <TableRow className="border-t border-slate-900/5 odd:bg-white even:bg-slate-50/40" key={`${row.transNo}-${row.prodCode}-${row.salesDate}`}>
+                <TableCell className="px-4 py-3 font-black tracking-tight text-slate-900">{row.transNo}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatDisplayDate(row.salesDate)}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{row.customerName}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{row.employeeName}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{row.prodCode} · {row.description}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatQuantity(row.quantity)} {row.unit}</TableCell>
+                <TableCell className="px-4 py-3 text-sm text-slate-600">{formatCurrency(row.unitPrice)}</TableCell>
+                <TableCell className="px-4 py-3 text-sm font-semibold text-slate-900">{formatCurrency(row.lineTotal)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </section>
+    </LookupPageShell>
+  );
+}
+
+export default OldTransactionsPage;

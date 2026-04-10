@@ -10,6 +10,7 @@ import ShellPlaceholderLayout from "./layouts/ShellPlaceholderLayout.jsx";
 import AuthCallbackPage from "./pages/AuthCallbackPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import OldTransactionsPage from "./pages/OldTransactionsPage.jsx";
 import PriceHistoryPage from "./pages/PriceHistoryPage.jsx";
 import ProductLookupPage from "./pages/ProductLookupPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
           {
             path: "/sales",
             element: <SalesListPage />,
+          },
+          {
+            path: "/sales/history",
+            element: <OldTransactionsPage />,
           },
           {
             path: "/sales/:transNo",

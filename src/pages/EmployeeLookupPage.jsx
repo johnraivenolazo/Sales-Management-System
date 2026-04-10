@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PageLoadingState from "../components/PageLoadingState.jsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.jsx";
 import { LookupPageShell } from "../features/lookups/LookupPageShell.jsx";
 import { formatDisplayDate } from "../features/sales/salesFormatting.js";
 import { getEmployees } from "../services/lookupService.js";
@@ -81,13 +82,19 @@ function EmployeeLookupPage() {
       title="Employees"
     >
       <section className="rounded-[2rem] border border-slate-900/5 bg-white p-5 shadow-sm">
-        <input
-          className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search employee code or name"
-          type="search"
-          value={query}
-        />
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Search employees
+          </span>
+          <input
+            aria-label="Search employees"
+            className="w-full rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900/30 focus:bg-white"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search employee code or name"
+            type="search"
+            value={query}
+          />
+        </label>
       </section>
 
       {error ? (
@@ -96,7 +103,7 @@ function EmployeeLookupPage() {
         </section>
       ) : null}
 
-      <div className="grid gap-4 xl:hidden">
+      <div className="grid gap-4 lg:hidden">
         {filteredEmployees.map((employee) => (
           <article className="rounded-[1.75rem] border border-slate-900/5 bg-white p-5 shadow-sm" key={employee.empno}>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">
@@ -115,35 +122,33 @@ function EmployeeLookupPage() {
         ))}
       </div>
 
-      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm xl:block">
-        <div className="app-scrollbar overflow-x-auto">
-          <table className="min-w-full border-collapse text-left">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Code</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Name</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Gender</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Hire date</th>
-                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Separated</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEmployees.map((employee) => (
-                <tr className="border-t border-slate-900/5" key={employee.empno}>
-                  <td className="px-5 py-4 font-black tracking-tight text-slate-900">{employee.empno}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-slate-900">
-                    {employee.lastname}, {employee.firstname}
-                  </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{employee.gender}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{formatDisplayDate(employee.hiredate)}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">
-                    {employee.sepDate ? formatDisplayDate(employee.sepDate) : "Active"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <section className="hidden overflow-hidden rounded-[2rem] border border-slate-900/5 bg-white shadow-sm lg:block">
+        <Table className="min-w-full text-left">
+          <TableHeader className="bg-slate-900 text-white">
+            <TableRow>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Code</TableHead>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Name</TableHead>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Gender</TableHead>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Hire date</TableHead>
+              <TableHead className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white">Separated</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredEmployees.map((employee) => (
+              <TableRow className="border-t border-slate-900/5 odd:bg-white even:bg-slate-50/40" key={employee.empno}>
+                <TableCell className="px-5 py-4 font-black tracking-tight text-slate-900">{employee.empno}</TableCell>
+                <TableCell className="px-5 py-4 text-sm font-semibold text-slate-900">
+                  {employee.lastname}, {employee.firstname}
+                </TableCell>
+                <TableCell className="px-5 py-4 text-sm text-slate-600">{employee.gender}</TableCell>
+                <TableCell className="px-5 py-4 text-sm text-slate-600">{formatDisplayDate(employee.hiredate)}</TableCell>
+                <TableCell className="px-5 py-4 text-sm text-slate-600">
+                  {employee.sepDate ? formatDisplayDate(employee.sepDate) : "Active"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </LookupPageShell>
   );
